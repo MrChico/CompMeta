@@ -5,6 +5,7 @@
 \usepackage[ngerman]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
+\usepackage{fitch}
 \usepackage{pf2}
 \usepackage{graphicx}
 \renewcommand{\baselinestretch}{1.2}
@@ -102,8 +103,76 @@ HU Berlin \\
 \end{equation}
 \subsection*{Excercise 2)}
 \subsubsection*{a)}
+propositional
 \subsubsection*{b)}
+higher-order
+\subsubsection*{c)}
+first-order
+\subsubsection*{d)}
+higher-order
 \subsection*{Excercise 3)}
+\subsection*{a)}
+\begin{equation}
+  A \land B \rightarrow C, B \rightarrow A, B \vdash C
+\end{equation}
+\subsection*{b)}
+\begin{equation}
+  A \vdash B \rightarrow A
+\end{equation}
+\subsection*{c)}
+\begin{equation}
+  A \rightarrow (B \rightarrow C) \vdash B \rightarrow (A \rightarrow C)
+\end{equation}
+\subsection*{d)}
+\begin{equation}
+  \neg A \vdash A \rightarrow B
+\end{equation}
+\subsection*{e)}
+\begin{equation}
+  \vdash A \lor \neg A
+\end{equation}
+\subsection*{f)}
+\begin{equation}
+  A \lor B \vdash A \rightarrow B
+\end{equation}
+\subsection*{g)}
+\begin{equation}
+  \neg A \lor B \vdash A \rightarrow B
+\end{equation}
+
+
+
+
+\begin{equation*}
+\begin{fitch}
+\fh X & $~\mathbf{A}$ \\
+\fa \fh (A \to \lnot A) \land (\lnot A \to A) & $~\mathbf{A}$ \\
+\fa \fa A \to \lnot A & 2 $\land~\mathbf{E}$\\
+\fa \fa \lnot A \to A & 2 $\land~\mathbf{E}$\\
+\fa \fa \fh A & $~\mathbf{A}$ \\
+\fa \fa \fa \lnot A & 3, 5 $\to\mathbf{E}$\\
+\fa \fa \fa A & 5 $~\mathbf{R}$\\
+\fa \fa \lnot A & 5-7 $\lnot~\mathbf{I}$\\
+\fa \fa \fh \lnot A & $~\mathbf{A}$ \\
+\fa \fa \fa A & 4, 9 $\to\mathbf{E}$\\
+\fa \fa \fa \lnot A & 9 $~\mathbf{R}$ \\
+\fa \fa A & 9-11 $\lnot~\mathbf{I^+}$\\
+\fa \lnot ((A \to \lnot A) \land (\lnot A \to A)) & 2-12 $\lnot~\mathbf{I^+}$
+\end{fitch}
+\end{equation*}
+
+---
+
+\begin{equation*}
+\begin{fitch}
+\fb A A A & Assumption 1 \\
+\fa B B B & Assumption 2 \\
+\fj C C C & Assumption 3 \\
+\fa D D D & Main proof step \\
+\fa E E E & Another main proof step\\
+\fa F F F & Another main proof step\\
+\end{fitch}
+\end{equation*}
 \subsection*{Excercise 4)}
 
 
