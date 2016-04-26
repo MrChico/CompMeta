@@ -240,8 +240,6 @@ INPUT /usr/local/texlive/2015basic/texmf-dist/fonts/tfm/public/latex-fonts/lasy8
 INPUT /usr/local/texlive/2015basic/texmf-dist/fonts/tfm/public/latex-fonts/lasy6.tfm
 OUTPUT doc.pdf
 INPUT /usr/local/texlive/2015basic/texmf-var/fonts/map/pdftex/updmap/pdftex.map
-INPUT /usr/local/texlive/2015basic/texmf-dist/fonts/tfm/public/cm/cmbx8.tfm
-INPUT /usr/local/texlive/2015basic/texmf-dist/fonts/tfm/public/cm/cmbx6.tfm
 INPUT doc.aux
 INPUT /usr/local/texlive/2015basic/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb
 INPUT /usr/local/texlive/2015basic/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb

@@ -1,5 +1,5 @@
 # Fdb version 3
-["pdflatex"] 1461679956 "doc.tex" "doc.pdf" "doc" 1461679957
+["pdflatex"] 1461681937 "doc.tex" "doc.pdf" "doc" 1461681938
   "/usr/local/texlive/2015basic/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
   "/usr/local/texlive/2015basic/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm" 1246382020 988 bdf658c3bfc2d96d3c8b02cfc1c94c20 ""
   "/usr/local/texlive/2015basic/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam10.tfm" 1246382020 916 f87d7c45f9c908e672703b83b72241a3 ""
@@ -7,8 +7,6 @@
   "/usr/local/texlive/2015basic/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm10.tfm" 1246382020 908 2921f8a10601f252058503cc6570e581 ""
   "/usr/local/texlive/2015basic/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm7.tfm" 1246382020 940 228d6584342e91276bf566bcf9716b83 ""
   "/usr/local/texlive/2015basic/texmf-dist/fonts/tfm/public/cm/cmbx12.tfm" 1136768653 1324 c910af8c371558dc20f2d7822f66fe64 ""
-  "/usr/local/texlive/2015basic/texmf-dist/fonts/tfm/public/cm/cmbx6.tfm" 1136768653 1344 8a0be4fe4d376203000810ad4dc81558 ""
-  "/usr/local/texlive/2015basic/texmf-dist/fonts/tfm/public/cm/cmbx8.tfm" 1136768653 1332 1fde11373e221473104d6cc5993f046e ""
   "/usr/local/texlive/2015basic/texmf-dist/fonts/tfm/public/cm/cmex10.tfm" 1136768653 992 662f679a0b3d2d53c1b94050fdaa3f50 ""
   "/usr/local/texlive/2015basic/texmf-dist/fonts/tfm/public/cm/cmmi12.tfm" 1136768653 1524 4414a8315f39513458b80dfc63bff03a ""
   "/usr/local/texlive/2015basic/texmf-dist/fonts/tfm/public/cm/cmmi6.tfm" 1136768653 1512 f21f83efb36853c0b70002322c1ab3ad ""
@@ -148,11 +146,11 @@
   "/usr/local/texlive/2015basic/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1453210305 331968 05e21b1f24a42efa4e340402f0e44dee ""
   "/usr/local/texlive/2015basic/texmf-var/web2c/pdftex/pdflatex.fmt" 1434548785 2499808 094ae36c4f42b6b16b28aadbfa403b60 ""
   "/usr/local/texlive/2015basic/texmf.cnf" 1432478332 628 096f87b1123b576e7bac81e7554a490e ""
-  "doc.aux" 1461679957 186 452dc42dbedc01d349cc718f4b8fc1cf ""
-  "doc.tex" 1461679956 6487 5a9584ba3d0ec30a396a2370e0752f08 ""
+  "doc.aux" 1461681938 186 452dc42dbedc01d349cc718f4b8fc1cf ""
+  "doc.tex" 1461681937 6379 df52f234439ef3b341c5f2d6ae838e4e ""
   "fitch.sty" 1461673837 3875 779ad7b711652ef973296f60b090a0d6 ""
   "pproof.sty" 1461679892 7239 5298517cd8c2fb2070e3c760cf0b8bf7 ""
   (generated)
+  "doc.log"
   "doc.aux"
   "doc.pdf"
-  "doc.log"
