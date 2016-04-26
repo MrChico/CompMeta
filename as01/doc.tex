@@ -1,0 +1,113 @@
+% Article template for Mathematics Magazine
+% Revised 7/2002  Thanks for Greg St. George
+\documentclass[12pt]{article}
+\usepackage{amssymb}
+\usepackage[ngerman]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{pf2}
+\usepackage{graphicx}
+\renewcommand{\baselinestretch}{1.2}
+%This is the command that spaces the manuscript for easy reading
+\newtheorem{zeige}{Zeige}
+
+
+%todo 
+\usepackage[colorinlistoftodos,prependcaption,textsize=tiny]{todonotes}
+\usepackage{xargs}                      % Use more than one optional parameter in a new commands
+\newcommandx{\QUESTION}[2][1=]{\todo[linecolor=none,backgroundcolor=blue!15,bordercolor=none,#1]{\textbf{QUESTION: }#2}}
+
+\pflongnumbers
+\def\assumePfkwd{\textsc{Assume}:}%
+\def\provePfkwd{\textsc{Zeige}:}%
+\def\pickPfkwd{\textsc{Pick}}%
+\def\pfnewPfkwd{\textsc{New}}%
+\def\casePfkwd{\textsc{Fall}:}%
+\def\letPfkwd{\textsc{Sei}:}%
+\def\sufficesPfkwd{\textsc{Suffices}:}%
+\def\asufficesPfkwd{\textsc{Suffices}}%
+\def\definePfkwd{\textsc{Def.}:}%
+\def\proofPfkwd{\textsc{Beweis}:}%
+\def\proofsketchPfkwd{\textsc{Proof sketch}:}%
+\def\qedPfkwd{{\fboxsep=\z@\fbox{\rule{.5em}{0pt}\rule{0pt}{2ex}}}}
+\def\qedstepPfkwd{Q.E.D.}
+
+
+
+\begin{document}
+%\thispagestyle{empty}
+\begin{center}
+\Large
+% TITLE GOES HERE
+Logik und Komplexität  \textsc{ Übung 7 }
+\end{center}
+
+\begin{flushright}
+Denis Erfurt, 532437\\
+HU Berlin \\
+
+\vspace{2 mm}
+
+\end{flushright}
+
+
+
+
+
+\subsection*{Excercise 1)}
+\subsubsection*{a)}
+”The ship is huge and it is blue.”
+\begin{equation}
+  Huge(the\_ship) \land Blue(the\_ship)
+\end{equation}
+\subsubsection*{b)}
+”I’m sad if the sun does not shine.”
+\begin{equation}
+  \neg Sun\_is_\_shining \rightarrow Sad(I)
+\end{equation}
+\subsubsection*{c)}
+”Either it’s raining or it is not.”
+\begin{equation}
+  Is\_raining \lor Is\_not\_raining
+\end{equation}
+\subsubsection*{d)}
+”I’m only going if she is going!”
+\begin{equation}
+  I\_am\_going \leftrightarrow She\_is\_going
+\end{equation}
+\subsubsection*{e)}
+”Everyone loves chocolate or ice cream.”
+\begin{equation}
+  \forall x Is\_someone(x) \rightarrow  Loves\_ice\_cream(x) \lor Loves\_chocolate(x)
+\end{equation}
+\subsubsection*{f)}
+”There is somebody who loves ice cream and loves chocolate as well.”
+\begin{equation}
+  \exists x Is\_someone(x) \land Loves\_ice\_cream(x) \land Loves\_chocolate(x)
+\end{equation}
+\subsubsection*{g)}
+”Everyone has got someone to play with.”
+\begin{equation}
+  \forall x \exists y Is\_someone(x) \land Is\_someone(y) \land Can\_play\_with(x, y)
+\end{equation}
+\subsubsection*{h)}
+”Nobody has somebody to play with if they are all mean.”
+\begin{equation}
+  \neg \exists x \exists y Is\_someone(x) \land Is\_somenone(y) \land Is\_mean(x) \land Can\_play\_with(x, y)
+\end{equation}
+\subsubsection*{i)}
+”Cats have the same annoying properties as dogs.”
+\begin{equation}
+  \forall P \forall cat \forall dog (Is\_annoying(P) \land Is\_cat(cat) \land Is\_dog(dog)) \rightarrow  (P(cat) \leftrightarrow P(dog)))
+\end{equation}
+\subsection*{Excercise 2)}
+\subsubsection*{a)}
+\subsubsection*{b)}
+\subsection*{Excercise 3)}
+\subsection*{Excercise 4)}
+
+
+
+
+
+\end{document}
