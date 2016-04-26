@@ -158,9 +158,18 @@ C & $mp(4,5)$
 \begin{equation}
   \vdash A \lor \neg A
 \end{equation}
+\begin{equation}
+\begin{fitch}
+  \fh \neg (A\lor \neg A) & $hyp.$\\
+  \fa \fh A & $hyp.$\\
+  \fa \fa A \lor \neg A & $disjI(2)$ \\
+  \fa \bot & $notE(1,3)$ \\
+  A \lor \neg A & $ccontr(1,4)$
+\end{fitch}
+\end{equation}
 \subsection*{f)}
 \begin{equation}
-  A \lor B \vdash A \rightarrow B
+  A \lor B, \neg A \vdash B
 \end{equation}
 \subsection*{g)}
 \begin{equation}
