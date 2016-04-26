@@ -1,5 +1,5 @@
 # Fdb version 3
-["pdflatex"] 1461683579 "doc.tex" "doc.pdf" "doc" 1461683581
+["pdflatex"] 1461683922 "doc.tex" "doc.pdf" "doc" 1461683924
   "/usr/local/texlive/2015basic/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
   "/usr/local/texlive/2015basic/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm" 1246382020 988 bdf658c3bfc2d96d3c8b02cfc1c94c20 ""
   "/usr/local/texlive/2015basic/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam10.tfm" 1246382020 916 f87d7c45f9c908e672703b83b72241a3 ""
@@ -146,11 +146,11 @@
   "/usr/local/texlive/2015basic/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1453210305 331968 05e21b1f24a42efa4e340402f0e44dee ""
   "/usr/local/texlive/2015basic/texmf-var/web2c/pdftex/pdflatex.fmt" 1434548785 2499808 094ae36c4f42b6b16b28aadbfa403b60 ""
   "/usr/local/texlive/2015basic/texmf.cnf" 1432478332 628 096f87b1123b576e7bac81e7554a490e ""
-  "doc.aux" 1461683580 186 452dc42dbedc01d349cc718f4b8fc1cf ""
-  "doc.tex" 1461683578 6607 aa3660625948be5d1ed9320b765eb7b0 ""
+  "doc.aux" 1461683923 186 452dc42dbedc01d349cc718f4b8fc1cf ""
+  "doc.tex" 1461683920 6619 d7cee80650b5a841aaa1a4186aa99c9b ""
   "fitch.sty" 1461673837 3875 779ad7b711652ef973296f60b090a0d6 ""
   "pproof.sty" 1461679892 7239 5298517cd8c2fb2070e3c760cf0b8bf7 ""
   (generated)
-  "doc.aux"
   "doc.log"
   "doc.pdf"
+  "doc.aux"

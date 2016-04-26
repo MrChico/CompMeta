@@ -85,7 +85,7 @@
 \subsubsection*{h)}
 ”Nobody has somebody to play with if they are all mean.”
 \begin{equation}
-  \neg \exists x \exists y Is\_someone(x) \land Is\_somenone(y) \land Is\_mean(x) \land Can\_play\_with(x, y)
+  \forall x Is\_someone(x) \land Is\_mean(x) \rightarrow  \neg \exists y \land Is\_somenone(y)\land Can\_play\_with(x, y)
 \end{equation}
 \subsubsection*{i)}
 ”Cats have the same annoying properties as dogs.”

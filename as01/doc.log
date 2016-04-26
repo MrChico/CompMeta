@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.6.17)  26 APR 2016 17:12
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.6.17)  26 APR 2016 17:18
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -710,6 +710,11 @@ File: ulasy.fd 1998/08/17 v2.2e LaTeX symbol font definitions
 ) [1
 
 {/usr/local/texlive/2015basic/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
+Overfull \hbox (11.26158pt too wide) detected at line 89
+\OMS/cmsy/m/n/12 8\OML/cmm/m/it/12 xIs[]someone\OT1/cmr/m/n/12 (\OML/cmm/m/it/12 x\OT1/cmr/m/n/12 ) \OMS/cmsy/m/n/12 ^ \OML/cmm/m/it/12 Is[]mean\OT1/cmr/m/n/12 (\OML/cmm/m/it/12 x\OT1/cmr/m/n/12 ) \OMS/cmsy/m/n/12 ! :9\OML/cmm/m/it/12 y \OMS/cmsy/m/n/12 ^ \OML/cmm/m/it/12 Is[]somenone\OT1/cmr/m/n/12 (\OML/cmm/m/it/12 y\OT1/cmr/m/n/12 ) \OMS/cmsy/m/n/12 ^ \OML/cmm/m/it/12 Can[]play[]with\OT1/cmr/m/n/12 (\OML/cmm/m/it/12 x; y\OT1/cmr/m/n/12 )
+ []
+
+
 Overfull \hbox (18.56506pt too wide) detected at line 94
 \OMS/cmsy/m/n/12 8\OML/cmm/m/it/12 P\OMS/cmsy/m/n/12 8\OML/cmm/m/it/12 cat\OMS/cmsy/m/n/12 8\OML/cmm/m/it/12 dog\OT1/cmr/m/n/12 (\OML/cmm/m/it/12 Is[]annoying\OT1/cmr/m/n/12 (\OML/cmm/m/it/12 P\OT1/cmr/m/n/12 ) \OMS/cmsy/m/n/12 ^ \OML/cmm/m/it/12 Is[]cat\OT1/cmr/m/n/12 (\OML/cmm/m/it/12 cat\OT1/cmr/m/n/12 ) \OMS/cmsy/m/n/12 ^ \OML/cmm/m/it/12 Is[]dog\OT1/cmr/m/n/12 (\OML/cmm/m/it/12 dog\OT1/cmr/m/n/12 )) \OMS/cmsy/m/n/12 ! \OT1/cmr/m/n/12 (\OML/cmm/m/it/12 P\OT1/cmr/m/n/12 (\OML/cmm/m/it/12 cat\OT1/cmr/m/n/12 ) \OMS/cmsy/m/n/12 $ \OML/cmm/m/it/12 P\OT1/cmr/m/n/12 (\OML/cmm/m/it/12 dog\OT1/cmr/m/n/12 )))
  []
@@ -724,7 +729,7 @@ Here is how much of TeX's memory you used:
  319 hyphenation exceptions out of 8191
  62i,30n,56p,509b,273s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/local/texlive/2015basic/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2015basic/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/local/texlive/2015basic/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2015basic/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2015basic/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2015basic/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
-Output written on doc.pdf (6 pages, 75268 bytes).
+Output written on doc.pdf (6 pages, 75266 bytes).
 PDF statistics:
  50 PDF objects out of 1000 (max. 8388607)
  35 compressed objects within 1 object stream
