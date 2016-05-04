@@ -1,0 +1,73 @@
+theory Scratch
+imports Main 
+
+begin
+
+theorem 
+  assumes a: "(\<forall> x. P x) \<and> (\<forall> x. Q x)"
+  shows "\<forall> x. P x \<and> Q x"
+proof -
+  {
+    fix x
+    from a have "\<forall> x. P x" by (rule conjunct1)
+    then  have px: "P x" by (rule allE)
+    from a have "\<forall> x. Q x" by (rule conjunct2)
+    then have "Q x" by (rule allE)
+    with px have "P x \<and> Q x" by (rule conjI)    
+  }
+  thus ?thesis by (rule allI)
+qed
+
+lemma
+  assumes "\<exists> x. P x \<and> Q x"
+  shows "\<exists> x. P x"
+proof -
+  from assms obtain x where 1: "P x \<and> Q x" by (rule exE)
+  then have xx: "P x" by (rule conjunct1)
+  then show ?thesis by (rule exI)
+qed
+
+
+lemma
+  assumes "\<forall> x. P x"
+  shows "\<exists>x. P x"
+proof -
+  fix x
+  from assms have "P x" by (rule allE)
+  then have "\<exists> x. P x" by (rule exI)
+  thus ?thesis .
+qed
+
+lemma
+  shows "((\<forall> x. P x) \<and> (\<forall> x. Q x)) \<longleftrightarrow> (\<forall> x. P x \<and> Q x)"
+proof -
+  {
+    assume a: "(\<forall> x. P x) \<and> (\<forall> x. Q x)"
+    {
+      fix x
+      from a have "\<forall> x. P x" by (rule conjunct1)
+      then have b: "P x" by (rule allE)
+      from a have "\<forall> x. Q x" by (rule conjunct2)
+      then have c: "Q x" by (rule allE)
+      from b c have "P x \<and> Q x" by (rule conjI)
+    }
+    then have "(\<forall> x. P x \<and> Q x)" by (rule allI)
+  } note lhs = this
+  {
+    assume a: "(\<forall> x. P x \<and> Q x)"
+    {
+      fix x
+      from a have "P x \<and> Q x" by (rule allE)
+      then have "P x" by (rule conjunct1)
+    }
+    then have b: "\<forall> x. P x" by (rule allI)
+    {
+      fix x
+      from a have "P x \<and> Q x" by (rule allE)
+      then have "Q x" by (rule conjunct2)
+    }
+    then have c: "\<forall> x. Q x" by (rule allI)
+    from b c have "(\<forall> x. P x) \<and> (\<forall> x. Q x)" by (rule conjI) 
+  } note rhs = this
+  from lhs rhs show ?thesis by (rule iffI)
+qed
