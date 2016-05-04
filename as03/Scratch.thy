@@ -5,7 +5,7 @@ begin
 
 subsection \<open>Exercise 1\<close>
 
-theorem 
+theorem "a)":
   assumes a: "(\<forall> x. P x) \<and> (\<forall> x. Q x)"
   shows "\<forall> x. P x \<and> Q x"
 proof -
@@ -20,7 +20,7 @@ proof -
   thus ?thesis by (rule allI)
 qed
 
-lemma
+lemma "b)":
   assumes "\<exists> x. P x \<and> Q x"
   shows "\<exists> x. P x"
 proof -
@@ -30,7 +30,7 @@ proof -
 qed
 
 
-lemma
+lemma "c)":
   assumes "\<forall> x. P x"
   shows "\<exists>x. P x"
 proof -
@@ -40,7 +40,7 @@ proof -
   thus ?thesis .
 qed
 
-lemma
+lemma "d)":
   shows "((\<forall> x. P x) \<and> (\<forall> x. Q x)) \<longleftrightarrow> (\<forall> x. P x \<and> Q x)"
 proof -
   {
@@ -76,7 +76,7 @@ qed
 
 subsection \<open>Exercise 2\<close>
 
-theorem 
+theorem "a":
   shows "(\<exists> x. \<forall> y. P x y) \<longrightarrow> (\<forall> y. \<exists> x. P x y)"
   nitpick
 proof -
@@ -93,9 +93,9 @@ proof -
   from this show ?thesis by (rule impI)
 qed
 
-theorem 
+theorem "b":
   shows "((\<forall> x. P x) \<longrightarrow> Q) \<longleftrightarrow> ((\<exists> x. P x) \<longrightarrow> Q)"
-  nitpick
+  proof 
   (*
     'a = {a, b, c, d}
     Q = False
@@ -106,7 +106,7 @@ theorem
   *)
 oops
 
-lemma
+lemma "c":
   shows "((\<forall> x. P x) \<or> (\<forall> x. Q x)) \<longleftrightarrow> (\<forall> x. (P x \<or> Q x))"
 proof -
 nitpick
@@ -119,7 +119,7 @@ nitpick
   *)
 oops
 
-lemma
+lemma "d":
   shows "((\<exists> x. P x) \<or> (\<exists> x. Q x)) \<longleftrightarrow> (\<exists> x. (P x \<or> P x))"
   nitpick
   (*
@@ -133,7 +133,7 @@ lemma
   *)
 oops
 
-lemma
+lemma "e":
   shows "(\<forall> x. \<exists> y. P x y) \<longrightarrow> (\<exists> y. \<forall> x. P x y)"
   nitpick
   (*
@@ -145,12 +145,39 @@ lemma
   *)
 oops
 
-lemma
+lemma "f":
   shows "(\<not>(\<forall> x. P x)) \<longleftrightarrow> (\<exists> x. \<not> P x)"
 proof -
+  { 
+    assume a: "(\<not>(\<forall> x. P x))"
+    {
+      assume b: "\<not>(\<exists> x. \<not> P x)"
+      {
+        fix y
+        {
+          assume c: "\<not>P y"
+          from c have d: "\<exists> x. \<not> P x" by (rule exI)
+          from b d have "False" by (rule notE)
+        }
+        from this have e: "P y" by (rule ccontr)
+      }
+      from this have d: "\<forall> x. P x" by (rule allI)
+      from a d have "False" by (rule notE)
+    }
+    from this have "\<exists> x. \<not> P x" by (rule ccontr)
+  } 
+  note ltor = this
   {
-    assume "\<not>(\<forall> x. P x)"
-  } note lhs = this
-  {
-  } note rhs = this
-  sorry
+    assume 1: "\<exists> x. \<not> P x"
+    from 1 obtain a where 2: "\<not>P a" by (rule exE)
+    { 
+      assume 3: "\<forall> x. P x"
+      from 3 have 4: "P a" by (rule allE)
+      from 2 4 have "False" by (rule notE)
+    } 
+    from this have "\<not>(\<forall> x. P x)" by (rule notI)
+  }
+  note rtol = this
+  from ltor rtol have "(\<not>(\<forall> x. P x)) \<longleftrightarrow> (\<exists> x. \<not> P x)" by (rule iffI)
+  thus ?thesis .
+qed
