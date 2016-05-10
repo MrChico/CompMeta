@@ -1,9 +1,7 @@
 session "ex03" = "HOL" +
   options [document = pdf, document_output = "output"]
   theories [document = false]
-    (* Foo *)
-    (* Bar *)
   theories
-    (* Baz *)
+	LundfallErfurtEx03
   document_files
     "root.tex"
