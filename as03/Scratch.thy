@@ -145,7 +145,7 @@ lemma "f":
   shows "(\<not>(\<forall> x. P x)) \<longleftrightarrow> (\<exists> x. \<not> P x)"
 proof -
   { 
-    assume a: "(\<not>(\<forall> x. P x))"
+    assume a: "\<not>(\<forall> x. P x)"
     {
       assume b: "\<not>(\<exists> x. \<not> P x)"
       {
@@ -230,27 +230,46 @@ subsection \<open>Exercise 4\<close>
 
 lemma allDeMorgan: "\<not> (\<forall> x. P(x)) \<Longrightarrow> (\<exists> x. \<not> (P(x)))" by simp
 
-lemma
-  shows a: "(\<exists> x. (D(x)) \<longrightarrow> (\<forall> y. D(y)))"
-proof cases
-  assume a: "\<forall> y. D(y)"  
+lemma disjToImp:
+  assumes "\<not>A \<or> B"
+  shows "A \<longrightarrow> B"
+  proof - 
   {
-    assume "(\<exists> x. D(x))"
-    from a have "(\<forall> y. D(y))" by -
-  }
-  from this have ?thesis by (rule impI) (* why the fuck not? *)
+    assume 1: "A"
+      {
+        assume 3: "\<not>A"
+        {
+          assume 2: "\<not>B"
+          from 3 1 have "False" by (rule notE)
+        } 
+        from this have "B" by (rule ccontr)
+      } note case1 = this
+      {
+        assume "B"
+      } note case2 = this
+      from assms case1 case2 have "B" by (rule disjE)
+      }
+  from this have "A \<longrightarrow> B" by (rule impI)
   thus ?thesis .
+qed
+
+lemma "ex4":
+  shows "\<exists> x. (D(x) \<longrightarrow> (\<forall> y. D(y)))"
+proof cases
+    assume 1: "\<forall> y. D(y)"  
+    {
+      assume "D(x)"
+      from 1 have "(\<forall> y. D(y))" by -
+    } 
+    from this have 2: "D(x) \<longrightarrow> (\<forall> y. D(y))" by (rule impI)
+    from 2 show b: "\<exists> x. (D(x) \<longrightarrow> (\<forall> y. D(y)))" by (rule exI)
 next
-  assume "\<not> (\<forall> y. D(y))"
-  then have "\<exists> y. \<not> (D(y))" by (rule allDeMorgan)
-  from this obtain y where 3: "\<not> D(y)"
-  (* if there is someone (y) who is not drinking, then D(y) \<longrightarrow> \<forall> x. D(x) is true *)
-  (*
-  assume D(y)
-  False
-  \<Rightarrow> ?Thesis (from false everything follows)
-  *)
-  sorry
+    assume 4: "\<not> (\<forall> y. D(y))"
+    then have 5: "\<exists> z. \<not> (D(z))" by (rule allDeMorgan)
+    from 5 obtain z where 5: "\<not>D(z)" by (rule exE)
+    then have "\<not>D(z) \<or> (\<forall> y. D(y))" by (rule disjI1)
+    then have 6: "D(z) \<longrightarrow> (\<forall> y. D(y))" by (rule disjToImp)
+    then show c: "\<exists> x. (D(x) \<longrightarrow> (\<forall> y. D(y)))" by (rule exI)
 qed
 
 end
