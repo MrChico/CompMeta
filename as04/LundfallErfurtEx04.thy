@@ -75,26 +75,22 @@ proof (induction n)
 next
   case (Suc n)
   from this have "sum_n_square (Suc n) = Suc n * Suc n + sum_n_square n" by simp
-  (* how to remove the div 6 here ? *)
   then have "sum_n_square (Suc n) = Suc n * Suc n + (n * (n + 1) * (2 * n + 1)) div 6" by (simp add: Suc.IH)
   then have "sum_n_square (Suc n) = ((Suc n) * (n + 1) * 6 + (Suc n) * n * (2 * n + 1)) div 6" by simp
-  (* dafuck simp can't distributive rule -- fuck you metis *)
-  then have "sum_n_square (Suc n) = ((Suc n) * ((n + 1) * 6 + n * (2 * n + 1))) div 6" by (metis add_mult_distrib2 mult.assoc)
+  then have "sum_n_square (Suc n) = ((Suc n) * ((n + 1) * 6) + (Suc n) * n * (2 * n + 1)) div 6" using mult.assoc [of "Suc n" "n + 1" 6] by simp
+  then have "sum_n_square (Suc n) = ((Suc n) * ((n + 1) * 6) + (Suc n) * (n * (2 * n + 1))) div 6" using mult.assoc [of "Suc n" "n" "2 * n + 1"] by simp
+  then have "sum_n_square (Suc n) = ((Suc n) * (((n + 1) * 6) + (n * (2 * n + 1)))) div 6" using add_mult_distrib2 [of "Suc n" "(n + 1) * 6"  "n * (2 * n + 1)"] by simp
   then have "sum_n_square (Suc n) = ((Suc n) * ((2 * n + 3) * 2 + 2 * n + n * (2 * n + 1))) div 6" by simp
   then have "sum_n_square (Suc n) = ((Suc n) * ((2 * n + 3) * 2 + n * (2 * n + 3))) div 6" using add_mult_distrib2 by simp
   then have "sum_n_square (Suc n) = ((Suc n) * (2 * n + 3) * (n + 2)) div 6" by (simp add: add_mult_distrib2 mult.commute)
-  then have "sum_n_square (Suc n) = (Suc n * (Suc n + 1) * (2 * Suc n + 1)) div 6" by (metis One_nat_def Suc_1 add_Suc_right add_Suc_shift mult_2 numeral_3_eq_3 semiring_normalization_rules(16))
-  thus ?case .
+  then have "sum_n_square (Suc n) = (Suc n * (2 * n + 3) * (Suc n + 1)) div 6" by (simp add: add_mult_distrib2 mult.commute)
+  then have "sum_n_square (Suc n) = (Suc n * ((2 * n + 3) * (Suc n + 1))) div 6" by (simp add: add_mult_distrib2 mult.commute)
+  then have "sum_n_square (Suc n) = (Suc n * ((Suc n + 1) * (2 * n + 3))) div 6" by (simp add: mult.commute)
+  then have "sum_n_square (Suc n) = (Suc n * ((Suc n + 1) * (2 * n + (2 * 1 + 1)))) div 6" by (simp add: mult.assoc [symmetric])
+  then have "sum_n_square (Suc n) = (Suc n * ((Suc n + 1) * (2 * Suc n + 1))) div 6" by (simp add: add_mult_distrib2)
+  then have "sum_n_square (Suc n) = (Suc n * (Suc n + 1) * (2 * Suc n + 1)) div 6" using mult.assoc [of "Suc n" "Suc n + 1" "2 * Suc n + 1"] by simp
+thus ?case .
 qed
-
-
-
-
-theorem test:
-  assumes "\<forall>x. (\<not>A(x) \<longrightarrow> B(x))" 
-  shows "\<forall>x. (\<not>B(x) \<longrightarrow> A(x))" 
-using assms by auto
-
 
 theorem Ex3:
 assumes 1: "\<forall>X. \<not>rich(X) \<longrightarrow> rich (parent(X))"
