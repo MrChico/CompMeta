@@ -91,8 +91,8 @@ qed
 
 
 theorem test:
-  assumes "\<not>A \<longrightarrow> B" 
-  shows "A \<or> B" 
+  assumes "\<forall>x. (\<not>A(x) \<longrightarrow> B(x))" 
+  shows "\<forall>x. (\<not>B(x) \<longrightarrow> A(x))" 
 using assms by auto
 
 
@@ -100,8 +100,7 @@ theorem Ex3:
 assumes 1: "\<forall>X. \<not>rich(X) \<longrightarrow> rich (parent(X))"
 shows "\<exists>X. rich(parent(parent(X)))\<and>rich(X)"
 proof cases 
-  { 
-    assume 2: "\<forall>X. \<not>rich(X)"
+  assume 2: "\<forall>X. \<not>rich(X)"
     {
       assume "\<not>(\<exists>X. rich(parent(parent(X))) \<and> rich(X))"
       fix X
@@ -111,19 +110,25 @@ proof cases
       then have 6: "\<exists>X. rich(X)" by (rule exI)
       from 2 have 7: "\<not> (\<exists> X. rich(X))" by simp
       from 7 6 have "False" by (rule notE)
-   }
+    }
   from this show "\<exists>X. rich(parent(parent(X)))\<and>rich(X)" by (rule ccontr)
 next
-  {
-    assume 8: "\<not>(\<forall>X. \<not>rich(X))"
-    from 8 have "\<exists>X. rich(X)" by simp
-    then obtain y where 9: "rich(y)" by (rule exE)
- {
-       fix x
-       from assms have "\<not>rich(x) \<longrightarrow> rich (parent(x))" by (rule allE)
-       then have "rich(x) \<or> rich(parent(x))" by (rule test)
-    }
-
-      
+  assume 8: "\<not>(\<forall>X. \<not>rich(X))"
+  from 8 have "\<exists>X. rich(X)" by simp
+  then obtain y where 9: "rich(y)" by (rule exE)
+  { 
+    assume 11: "\<not>rich(parent(parent(y)))"
+    from 1 have 12: "\<forall>x. \<not>rich(parent(x)) \<longrightarrow> rich(x)" by (rule test)
+    from 11 12 have 13: "rich(parent(y))" by simp
+    from 1 11 have 14: "rich(parent(parent(parent(y))))" by simp
+    from 13 14 have "rich(parent(parent(parent(y)))) \<and> rich(parent(y))" by simp
+    then have "\<exists>y. rich(parent(parent(y)))\<and>rich(y)" by (rule exI)
+    } note case1 = this
+    { 
+      assume 15: "rich(parent(parent(y)))"
+      from 9 15 have "rich(parent(parent(y))) \<and> rich(y)" by simp
+      then have "\<exists>y. rich(parent(parent(y)))\<and>rich(y)" by (rule exI)
+    } note case2 = this
+    from case1 case2 show "\<exists>y. rich(parent(parent(y))) \<and> rich(y)" by cases   
 qed
 end
