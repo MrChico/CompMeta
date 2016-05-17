@@ -2,10 +2,8 @@ theory LundfallErfurtEx04
 imports Main
 begin
 
-lemma flipping:
-  assumes "A \<longrightarrow> B"
-  shows "\<not> B \<longrightarrow> \<not> A"
-using assms by blast
+
+
 
 
 lemma fromEx2:
@@ -92,6 +90,23 @@ next
 thus ?case .
 qed
 
+lemma flipping:
+  assumes "A \<longrightarrow> B"
+  shows "\<not> B \<longrightarrow> \<not> A"
+proof -
+  {
+    assume 1: "\<not>B"
+    {
+      assume 2: "A"
+      from assms 2 have 3: "B" by (rule mp)
+      from 1 3 have "False" by (rule notE)
+    }
+    from this have "\<not>A" by (rule notI)
+  }
+  from this have "\<not> B \<longrightarrow> \<not> A" by (rule impI)
+thus ?thesis .
+qed
+
 theorem Ex3:
 assumes 1: "\<forall>X. \<not>rich(X) \<longrightarrow> rich (parent(X))"
 shows "\<exists>X. rich(parent(parent(X)))\<and>rich(X)"
@@ -114,7 +129,13 @@ next
   then obtain y where 9: "rich(y)" by (rule exE)
   { 
     assume 11: "\<not>rich(parent(parent(y)))"
-    from 1 have 12: "\<forall>x. \<not>rich(parent(x)) \<longrightarrow> rich(x)" by (rule test)
+    {
+      fix x
+      from assms have "\<not>rich(x) \<longrightarrow> rich(parent(x))" by (rule allE)
+      then have "\<not>rich(parent(x)) \<longrightarrow> \<not>(\<not>rich(x))" by (rule flipping)
+      then have "\<not>rich(parent(x)) \<longrightarrow> rich(x)" by simp
+    }
+    from this have 12: "\<forall>x. \<not>rich(parent(x)) \<longrightarrow> rich(x)" by (rule allI)
     from 11 12 have 13: "rich(parent(y))" by simp
     from 1 11 have 14: "rich(parent(parent(parent(y))))" by simp
     from 13 14 have "rich(parent(parent(parent(y)))) \<and> rich(parent(y))" by simp
