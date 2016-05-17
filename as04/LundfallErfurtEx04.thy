@@ -39,7 +39,7 @@ qed
 
 text \<open>One argument could be that we do not accept the law of double negation. Then we cannot 
   conclude the existence of god from refuting the non-existence of god.
-  Also, the way the implication is interpreted in classical logic is not they way we necessarily
+  Also, the way the implication is interpreted in classical logic is not the way we necessarily
   use it in everyday language. The assumption 'it is not that case that (if I pray, my prayers will
   be answered)' is different from 'if I pray, my prayers will not be answered', which is probably
   a more reasonable assumption in the context of gods nonexistence.\<close>  
