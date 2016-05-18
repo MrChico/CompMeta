@@ -2,10 +2,8 @@ theory LundfallErfurtEx04
 imports Main
 begin
 
-lemma flipping:
-  assumes "A \<longrightarrow> B"
-  shows "\<not> B \<longrightarrow> \<not> A"
-using assms by blast
+
+
 
 
 lemma fromEx2:
@@ -41,7 +39,7 @@ qed
 
 text \<open>One argument could be that we do not accept the law of double negation. Then we cannot 
   conclude the existence of god from refuting the non-existence of god.
-  Also, the way the implication is interpreted in classical logic is not they way we necessarily
+  Also, the way the implication is interpreted in classical logic is not the way we necessarily
   use it in everyday language. The assumption 'it is not that case that (if I pray, my prayers will
   be answered)' is different from 'if I pray, my prayers will not be answered', which is probably
   a more reasonable assumption in the context of gods nonexistence.\<close>  
@@ -75,26 +73,39 @@ proof (induction n)
 next
   case (Suc n)
   from this have "sum_n_square (Suc n) = Suc n * Suc n + sum_n_square n" by simp
-  (* how to remove the div 6 here ? *)
   then have "sum_n_square (Suc n) = Suc n * Suc n + (n * (n + 1) * (2 * n + 1)) div 6" by (simp add: Suc.IH)
   then have "sum_n_square (Suc n) = ((Suc n) * (n + 1) * 6 + (Suc n) * n * (2 * n + 1)) div 6" by simp
-  (* dafuck simp can't distributive rule -- fuck you metis *)
-  then have "sum_n_square (Suc n) = ((Suc n) * ((n + 1) * 6 + n * (2 * n + 1))) div 6" by (metis add_mult_distrib2 mult.assoc)
+  then have "sum_n_square (Suc n) = ((Suc n) * ((n + 1) * 6) + (Suc n) * n * (2 * n + 1)) div 6" using mult.assoc [of "Suc n" "n + 1" 6] by simp
+  then have "sum_n_square (Suc n) = ((Suc n) * ((n + 1) * 6) + (Suc n) * (n * (2 * n + 1))) div 6" using mult.assoc [of "Suc n" "n" "2 * n + 1"] by simp
+  then have "sum_n_square (Suc n) = ((Suc n) * (((n + 1) * 6) + (n * (2 * n + 1)))) div 6" using add_mult_distrib2 [of "Suc n" "(n + 1) * 6"  "n * (2 * n + 1)"] by simp
   then have "sum_n_square (Suc n) = ((Suc n) * ((2 * n + 3) * 2 + 2 * n + n * (2 * n + 1))) div 6" by simp
   then have "sum_n_square (Suc n) = ((Suc n) * ((2 * n + 3) * 2 + n * (2 * n + 3))) div 6" using add_mult_distrib2 by simp
   then have "sum_n_square (Suc n) = ((Suc n) * (2 * n + 3) * (n + 2)) div 6" by (simp add: add_mult_distrib2 mult.commute)
-  then have "sum_n_square (Suc n) = (Suc n * (Suc n + 1) * (2 * Suc n + 1)) div 6" by (metis One_nat_def Suc_1 add_Suc_right add_Suc_shift mult_2 numeral_3_eq_3 semiring_normalization_rules(16))
-  thus ?case .
+  then have "sum_n_square (Suc n) = (Suc n * (2 * n + 3) * (Suc n + 1)) div 6" by (simp add: add_mult_distrib2 mult.commute)
+  then have "sum_n_square (Suc n) = (Suc n * ((2 * n + 3) * (Suc n + 1))) div 6" by (simp add: add_mult_distrib2 mult.commute)
+  then have "sum_n_square (Suc n) = (Suc n * ((Suc n + 1) * (2 * n + 3))) div 6" by (simp add: mult.commute)
+  then have "sum_n_square (Suc n) = (Suc n * ((Suc n + 1) * (2 * n + (2 * 1 + 1)))) div 6" by (simp add: mult.assoc [symmetric])
+  then have "sum_n_square (Suc n) = (Suc n * ((Suc n + 1) * (2 * Suc n + 1))) div 6" by (simp add: add_mult_distrib2)
+  then have "sum_n_square (Suc n) = (Suc n * (Suc n + 1) * (2 * Suc n + 1)) div 6" using mult.assoc [of "Suc n" "Suc n + 1" "2 * Suc n + 1"] by simp
+thus ?case .
 qed
 
-
-
-
-theorem test:
-  assumes "\<forall>x. (\<not>A(x) \<longrightarrow> B(x))" 
-  shows "\<forall>x. (\<not>B(x) \<longrightarrow> A(x))" 
-using assms by auto
-
+lemma flipping:
+  assumes "A \<longrightarrow> B"
+  shows "\<not> B \<longrightarrow> \<not> A"
+proof -
+  {
+    assume 1: "\<not>B"
+    {
+      assume 2: "A"
+      from assms 2 have 3: "B" by (rule mp)
+      from 1 3 have "False" by (rule notE)
+    }
+    from this have "\<not>A" by (rule notI)
+  }
+  from this have "\<not> B \<longrightarrow> \<not> A" by (rule impI)
+thus ?thesis .
+qed
 
 theorem Ex3:
 assumes 1: "\<forall>X. \<not>rich(X) \<longrightarrow> rich (parent(X))"
@@ -118,7 +129,13 @@ next
   then obtain y where 9: "rich(y)" by (rule exE)
   { 
     assume 11: "\<not>rich(parent(parent(y)))"
-    from 1 have 12: "\<forall>x. \<not>rich(parent(x)) \<longrightarrow> rich(x)" by (rule test)
+    {
+      fix x
+      from assms have "\<not>rich(x) \<longrightarrow> rich(parent(x))" by (rule allE)
+      then have "\<not>rich(parent(x)) \<longrightarrow> \<not>(\<not>rich(x))" by (rule flipping)
+      then have "\<not>rich(parent(x)) \<longrightarrow> rich(x)" by simp
+    }
+    from this have 12: "\<forall>x. \<not>rich(parent(x)) \<longrightarrow> rich(x)" by (rule allI)
     from 11 12 have 13: "rich(parent(y))" by simp
     from 1 11 have 14: "rich(parent(parent(parent(y))))" by simp
     from 13 14 have "rich(parent(parent(parent(y)))) \<and> rich(parent(y))" by simp
