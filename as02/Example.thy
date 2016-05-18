@@ -235,6 +235,7 @@ theorem d:
   thus ?thesis .
 qed
 
+
 theorem e:
  shows "A \<or> \<not> A"
  proof -
