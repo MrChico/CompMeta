@@ -59,23 +59,23 @@ paragraph "Other operators on sets"
 
 text "Define intersection by"
 abbreviation intersect :: "'a Set \<Rightarrow> 'a Set \<Rightarrow> 'a Set" (infix "\<inter>" 41) where
-  "A \<inter> B \<equiv> \<dots>"
+  "A \<inter> B \<equiv> \<lambda> x. A x \<and> B x"
 
 text "Define union by"
 abbreviation union :: "'a Set \<Rightarrow> 'a Set \<Rightarrow> 'a Set" (infix "\<union>" 41) where
-  "A \<union> B \<equiv> \<dots>e"
+  "A \<union> B \<equiv> \<lambda> x. A x \<or> B x"
 
 text "Define difference by"
 abbreviation diff :: "'a Set \<Rightarrow> 'a Set \<Rightarrow> 'a Set" (infix "\<setminus>" 41) where
-  "A \<setminus> B \<equiv> \<dots>"
+  "A \<setminus> B \<equiv> \<lambda> x. A x \<and> \<not> B x"
 
 text "Define subset by"
 abbreviation subset :: "'a Set \<Rightarrow> 'a Set \<Rightarrow> bool" (infix "\<subseteq>" 41) where
-  "A \<subseteq> B \<equiv> \<dots>"
+  "A \<subseteq> B \<equiv> \<forall> x. A x \<longrightarrow> B x"
 
 text "Define intersection by"
 abbreviation setequiv :: "'a Set \<Rightarrow> 'a Set \<Rightarrow> bool" (infix "\<simeq>" 41) where
-  "A \<simeq> B \<equiv> \<dots>"
+  "A \<simeq> B \<equiv> \<forall> x. A x \<longleftrightarrow> B x"
 
 
 
@@ -92,6 +92,8 @@ text \<open>As for sets, we can define relations in HOL.
      @{term "x"} is in relation to @{term "y"}, infix-ly written @{term "xRy"},
      if and only if @{term "R x y"} holds.\<close>
 
+
+
 text \<open>
 \<^enum> Formulate a predicate that is true iff a given relation
         @{term "R :: 'a \<Rightarrow> 'a \<Rightarrow> bool"} is reflexive.
@@ -105,6 +107,24 @@ text \<open>
         @{term "R :: 'a \<Rightarrow> 'a \<Rightarrow> bool"} is a total order.
 \<close>
 
+type_synonym 'a Rel = "'a \<Rightarrow> 'a \<Rightarrow> bool"
+
+abbreviation reflexive :: "'a Rel \<Rightarrow> bool" where
+  "reflexive R \<equiv> \<forall> A. R A A"
+
+abbreviation transitive :: "'a Rel \<Rightarrow> bool" where
+  "transitive R \<equiv> \<forall> A. \<forall> B. \<forall> C. R A B \<and> R B C \<longrightarrow> R A C"
+
+abbreviation symmetric :: "'a Rel \<Rightarrow> bool" where
+  "symmetric R \<equiv> \<forall> A. \<forall> B. R A B \<longrightarrow> R B A"
+
+abbreviation equivalence :: "'a Rel \<Rightarrow> bool" where
+  "equivalence R \<equiv> reflexive R \<and> transitive R \<and> symmetric R"
+
+abbreviation totalOrder :: "'A Rel \<Rightarrow> bool" where
+  "totalOrder R \<equiv> reflexive R \<and> transitive R \<and> \<not> symmetric R \<and> (\<forall> A. \<forall> B. R A B \<or> R B A)"
+
+
 text \<open>
 Bonus-task (harder):
 \<^enum> Formulate a function that returns the reflexive closure
@@ -112,6 +132,16 @@ Bonus-task (harder):
 \<^enum> Formulate a function that returns the transitive closure
         of a relation  @{term "R :: 'a \<Rightarrow> 'a \<Rightarrow> bool"}.
 \<close> 
+fun reflexclosure :: "'a Rel \<Rightarrow> 'a Rel" where
+  "reflexclosure R = (\<lambda> x. \<lambda> y. R x y \<or> x = y)"
+
+fun transitiveclosure :: "'a Rel \<Rightarrow> 'a Rel" where
+(*
+  "transitiveclosure = (\<lambda> x. \<lambda> y. R x y \<or> (\<exists> z. (transitiveclosure R) x z \<and> (transitiveclosure R) z y))"
+*)
+  "transitiveclosure = (\<lambda> x. \<lambda> y. \<forall> S. transitive S \<rightarrow> ((\<forall> a. \<forall> b. R a b \<longrightarrow> S a b) \<longrightarrow> S x y))"
+
+(* term "(op =) b" *)
 
 text "You can verify your definitions using by proving:"
 
