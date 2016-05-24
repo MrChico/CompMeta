@@ -129,22 +129,12 @@ axiomatization where
   C1: "\<exists> C. composesWith C A B" and
   C2: "\<exists> M. mockingbird M"
 
-lemma
-assumes a1: "mockingbird M"
-assumes a2: "A \<cdot> (M \<cdot> x) = B"
-shows "A \<cdot> (x \<cdot> x ) = B"
-proof -
-  from a1 have "\<forall> x . M \<cdot> x = x \<cdot> x" unfolding mockingbird_def .
-  then have mock: "M \<cdot> x = x \<cdot> x" by (rule allE)
-  from mock a2 show ?thesis by (rule subst)
-qed
-
 theorem "first-rumor": "\<forall> x. \<exists> y. isfond x y"
 proof - 
   {
     fix x
     from C2 obtain M where 1: "mockingbird M" by (rule exE)
-    from 1 have 2: "\<forall> x . M \<cdot> x = x \<cdot> x" unfolding mockingbird_def .
+    from 1 have 2: "\<forall> z . M \<cdot> z = z \<cdot> z" unfolding mockingbird_def .
     from C1 obtain C where 4: "composesWith C x M" by (rule exE)
     then have 5: "\<forall> y. x \<cdot> (M \<cdot> y) = C \<cdot> y" unfolding composesWith_def .
     have "C \<cdot> C = C \<cdot> C" by simp
