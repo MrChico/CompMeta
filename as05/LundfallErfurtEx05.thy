@@ -145,25 +145,17 @@ proof -
     fix x
     from C2 obtain M where 1: "mockingbird M" by (rule exE)
     from 1 have 2: "\<forall> x . M \<cdot> x = x \<cdot> x" unfolding mockingbird_def .
-    from 2 have 3: "M \<cdot> (M \<cdot> M) = (M \<cdot> M) \<cdot> (M \<cdot> M)" by (rule allE)
-    from C1 obtain C where 4: "composesWith C M M" by (rule exE)
-    then have 5: "\<forall> x. M \<cdot> (M \<cdot> x) = C \<cdot> x" unfolding composesWith_def .
-    then have "M \<cdot> (M \<cdot> C) = C \<cdot> C" by (rule allE)
-    from 5 have 6: "M \<cdot> (M \<cdot> M) = C \<cdot> M" by (rule allE)
-    from 3 6 have 7: "(M \<cdot> M) \<cdot> (M \<cdot> M) = C \<cdot> M" by simp
-    have "M \<cdot> M = (x \<cdot> M) \<cdot> M" sorry
-    then have "M = x \<cdot> M" sorry
-    have 8: "x \<cdot> (C \<cdot> M) = C \<cdot> M" sorry
-    from 7 6 8 have 9: "x \<cdot> (M \<cdot> (M \<cdot> M)) = (M \<cdot> M) \<cdot> (M \<cdot> M)" by simp
-    from 3 9 have "x \<cdot> (M \<cdot> (M \<cdot> M)) = M \<cdot> (M \<cdot> M)" by simp
-    then have "isfond x (M \<cdot> (M \<cdot> M))" unfolding isfond_def .
+    from C1 obtain C where 4: "composesWith C x M" by (rule exE)
+    then have 5: "\<forall> y. x \<cdot> (M \<cdot> y) = C \<cdot> y" unfolding composesWith_def .
+    have "C \<cdot> C = C \<cdot> C" by simp
+    from 2 have "M \<cdot> C = C \<cdot> C" by (rule allE)
+    from 5 have 6: "x \<cdot> (M \<cdot> C) = C \<cdot> C" by (rule allE)
+    from 2 5 have "x \<cdot> (M \<cdot> C) = M \<cdot> C" by simp
+    then have "isfond x (M \<cdot> C)" unfolding isfond_def .
     then have "\<exists> y. isfond x y" by (rule exI)
   }
   from this have "\<forall> x. \<exists> y. isfond x y" by (rule allI)
   thus ?thesis .
 qed
-
-theorem "second-rumor": "\<exists> x. \<forall> y. \<not>(isfond x y)"   
-nitpick [user_axioms]
-oops 
+ 
 end
