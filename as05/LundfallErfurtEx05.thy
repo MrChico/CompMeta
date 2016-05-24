@@ -5,9 +5,66 @@ text \<open>Exercise 1\<close>
 theorem ex1 :
 fixes "f" :: "bool \<Rightarrow> bool"
 shows "f (f (f n)) = f n"
+proof -
+  have "\<not> n \<or> n" by (rule excluded_middle)
+  then show ?thesis
+  proof
+    assume 1: "\<not> n"
+    have "\<not> f n \<or> f n" by (rule excluded_middle)
+    then show ?thesis
+    proof
+      assume 2: "\<not> f n"
+      then have "\<not> f(f(n))" using 1 by simp
+      then have 4: "\<not> f(f(f(n)))" using 2 by simp
+      from 2 4 show ?thesis by simp
+    next
+      assume 5: "f n"
+      have "\<not> f(f(n)) \<or> f(f(n))" by (rule excluded_middle)
+      then show ?thesis
+      proof
+        assume "\<not> f(f(n))"
+        then have "f(f(f(n)))" using 1 5 by simp
+        thus ?thesis using 5 by simp
+      next 
+        assume "f(f(n))"
+        then have "f(f(f(n)))" using 5 by simp
+        thus ?thesis using 5 by simp
+      qed
+    qed
+  next
+    assume "n"
+    
+        
+      
+      
+
+
+(*proof -
+  have "\<not> (n \<and> f n) \<or> (n \<and> f n)" by (rule excluded_middle)
+  then show "f(f(f(n))) = f n"
+  proof
+    assume "\<not> (n \<and> f n)"
+    from this have "\<not> n \<or> \<not> f n" by simp 
+    then show "f(f(f(n))) = f n"
+    proof
+      assume "\<not> n"
+      have "f n \<or> \<not> f n" by (rule excluded_middle)
+    next
+      assume "\<not> f n"
+    qed
+  next
+    assume "n \<and> f n"
+      
+    show "f(f(f(n))) = f n"
+  qed
+qed
+*)
+
+
+(*
 sledgehammer
 by smt
-(*  show "f (f (f n)) = f n" sorry
+  show "f (f (f n)) = f n" sorry
 qed
 *)
 text \<open>Exercise 2\<close>
