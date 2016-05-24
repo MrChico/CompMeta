@@ -5,7 +5,7 @@ begin
 text \<open>Denis Erfurt - k0025944\<close>
 
 text \<open>Exercise 1\<close>
-theorem ex1 :
+theorem ex1:
 fixes "f" :: "bool \<Rightarrow> bool"
 shows "f (f (f n)) = f n"
 proof -
@@ -59,40 +59,7 @@ proof -
     qed
   qed
 qed
-        
-        
-      
-      
 
-
-(*proof -
-  have "\<not> (n \<and> f n) \<or> (n \<and> f n)" by (rule excluded_middle)
-  then show "f(f(f(n))) = f n"
-  proof
-    assume "\<not> (n \<and> f n)"
-    from this have "\<not> n \<or> \<not> f n" by simp 
-    then show "f(f(f(n))) = f n"
-    proof
-      assume "\<not> n"
-      have "f n \<or> \<not> f n" by (rule excluded_middle)
-    next
-      assume "\<not> f n"
-    qed
-  next
-    assume "n \<and> f n"
-      
-    show "f(f(f(n))) = f n"
-  qed
-qed
-*)
-
-
-(*
-sledgehammer
-by smt
-  show "f (f (f n)) = f n" sorry
-qed
-*)
 text \<open>Exercise 2\<close>
 abbreviation leibnizEq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infixl "=L"  42 ) where
 "a =L b \<equiv> \<forall>P. P a \<longrightarrow> P b"
