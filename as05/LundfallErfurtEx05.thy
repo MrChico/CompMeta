@@ -1,6 +1,9 @@
 theory LundfallErfurtEx05
 imports Main
 begin
+
+text \<open>Denis Erfurt - k0025944\<close>
+
 text \<open>Exercise 1\<close>
 theorem ex1 :
 fixes "f" :: "bool \<Rightarrow> bool"
@@ -32,8 +35,31 @@ proof -
       qed
     qed
   next
-    assume "n"
-    
+    assume 6: "n"
+    have "\<not> f n \<or> f n" by (rule excluded_middle)
+    then show ?thesis
+    proof
+      assume 7: "\<not> f n"
+      have "\<not> f(f(n))\<or> f(f(n))" by (rule excluded_middle)
+      thus ?thesis
+      proof
+        assume "\<not> f(f(n))"
+        then have "\<not> f(f(f(n)))" using 7 by simp
+        thus ?thesis using 7 by simp
+      next
+        assume "f(f(n))"
+        then have "\<not> f(f(f(n)))" using 6 7 by simp
+        thus ?thesis using 7 by simp
+      qed
+    next
+      assume 8: "f n"
+      then have "f(f(n))" using 6 by simp
+      then have "f(f(f(n)))" using 6 8 by simp
+      thus ?thesis using 8 by simp
+    qed
+  qed
+qed
+        
         
       
       
