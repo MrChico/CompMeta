@@ -47,12 +47,13 @@ axiomatization where
   T: "\<lfloor>\<^bold>\<box>A \<^bold>\<rightarrow> A \<rfloor>"
 
 theorem "Ex1_c":
-  assumes 1: "\<lfloor>\<^bold>\<box>(isRaining \<^bold>\<rightarrow> StreetIsWet)\<rfloor>" AND
-  assumes 2: "\<lfloor>isRaining\<rfloor>" AND
-  assumes T
+  assumes 1: "\<lfloor>\<^bold>\<box>( isRaining \<^bold>\<rightarrow> StreetIsWet)\<rfloor>" AND
+  assumes 2: "\<lfloor>isRaining\<rfloor>"
   shows "\<lfloor>StreetIsWet\<rfloor>"
 proof -
-  from assms show ?thesis. by metis
+  from assms have "\<lfloor>\<^bold>\<box>isRaining \<^bold>\<rightarrow> \<^bold>\<box> StreetIsWet\<rfloor>" by simp
+  from 2 have "\<lfloor>\<^bold>\<box>isRaining\<rfloor>"
+  then show ?thesis. by simp \<langle>T\<rangle>
 qed
 
 
