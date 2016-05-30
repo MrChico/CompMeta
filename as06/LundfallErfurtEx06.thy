@@ -57,5 +57,15 @@ proof -
   then show ?thesis using T by auto
 qed
 
+axiomatization where 
+  5: "\<lfloor>\<^bold>\<diamond>A \<^bold>\<rightarrow> \<^bold>\<box>\<^bold>\<diamond>A \<rfloor>"
 
-end
+text \<open>The intuition behind this axiom is: If something is possible, then it is necessarily possible\<close>
+
+theorem "Ex1_d":
+  assumes "\<lfloor>isRaining\<rfloor>"
+  shows "\<lfloor>\<^bold>\<box>\<^bold>\<diamond>isRaining\<rfloor>"
+proof -
+  from assms show ?thesis using 5 by metis
+qed 
+end       
