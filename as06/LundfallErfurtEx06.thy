@@ -67,5 +67,23 @@ theorem "Ex1_d":
   shows "\<lfloor>\<^bold>\<box>\<^bold>\<diamond>isRaining\<rfloor>"
 proof -
   from assms show ?thesis using 5 by metis
-qed 
+qed
+
+text \<open>Exercise 2\<close>
+consts unlimited :: "\<mu>\<Rightarrow>\<sigma>"
+
+definition God where "God G \<equiv> unlimited(G)"
+
+axiomatization where 
+  B: "\<lfloor>(\<^bold>\<box> (\<^bold>\<exists> x. unlimited(x))) \<^bold>\<or> (\<^bold>\<not>\<^bold>\<diamond>(\<^bold>\<exists> x. unlimited(x)))\<rfloor>"
+
+axiomatization where
+  C: "\<lfloor>\<^bold>\<not>\<^bold>\<diamond>(\<^bold>\<exists> x. unlimited(x))\<rfloor>"
+
+theorem d:
+  shows "\<lfloor>\<^bold>\<box> (\<^bold>\<exists> x. x \<^bold>= G)\<rfloor>"
+proof -
+  show ?thesis using B C by metis
+qed
+
 end       
