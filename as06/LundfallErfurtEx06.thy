@@ -69,6 +69,7 @@ proof -
   from assms show ?thesis using 5 by metis
 qed
 
+
 text \<open>Exercise 2\<close>
 consts unlimited :: "\<mu>\<Rightarrow>\<sigma>"
 
@@ -83,7 +84,8 @@ axiomatization where
 theorem d:
   shows "\<lfloor>\<^bold>\<box> (\<^bold>\<exists> x. x \<^bold>= G)\<rfloor>"
 proof -
-  show ?thesis using B C by metis
+  show ?thesis using B C by auto
 qed
 
+text \<open>To prove this ontological argument we do not require axiom K or 5\<close>
 end       
