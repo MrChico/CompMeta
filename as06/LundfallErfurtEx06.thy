@@ -51,9 +51,10 @@ theorem "Ex1_c":
   assumes 2: "\<lfloor>isRaining\<rfloor>"
   shows "\<lfloor>StreetIsWet\<rfloor>"
 proof -
-  from assms have "\<lfloor>\<^bold>\<box>isRaining \<^bold>\<rightarrow> \<^bold>\<box> StreetIsWet\<rfloor>" by simp
-  from 2 have "\<lfloor>\<^bold>\<box>isRaining\<rfloor>"
-  then show ?thesis. by simp \<langle>T\<rangle>
+  from assms have 3: "\<lfloor>(\<^bold>\<box>isRaining) \<^bold>\<rightarrow> (\<^bold>\<box> StreetIsWet)\<rfloor>" by simp
+  from 2 have 4: "\<lfloor>\<^bold>\<box>isRaining\<rfloor>" by simp
+  from 2 3 have "\<lfloor>\<^bold>\<box> StreetIsWet\<rfloor>" by auto
+  then show ?thesis using T by auto
 qed
 
 
