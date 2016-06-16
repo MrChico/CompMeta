@@ -3,28 +3,17 @@ imports QMLS5U Main
 begin
 section\<open>Exercise 2\<close>
 
-theorem 4:
-  assumes "S5_sem \<and> S5_ax"
-  shows "\<lfloor>\<^bold>\<box>p\<^bold>\<rightarrow>\<^bold>\<box>\<^bold>\<box>p\<rfloor>"
+(*S5 is axiom M together with axiom V*)
+
+theorem M:
+  shows "\<lfloor>\<^bold>\<box>p\<^bold>\<rightarrow>p\<rfloor>"
   by simp
 
-theorem 5:
-  assumes "S5_sem \<and> S5_ax"
-  shows "\<lfloor>\<^bold>\<diamond>p\<^bold>\<rightarrow>\<^bold>\<box>\<^bold>\<diamond>p\<rfloor>"
-  using assms by blast
-
-theorem k:
-  shows "\<lfloor>\<^bold>\<box>(a\<^bold>\<rightarrow>b)\<^bold>\<rightarrow>(\<^bold>\<box>a \<^bold>\<rightarrow>\<^bold>\<box>b)\<rfloor>"
+theorem V:
+  shows "\<lfloor>\<^bold>\<forall>\<phi>. \<^bold>\<diamond>\<phi> \<^bold>\<rightarrow> \<^bold>\<box>\<^bold>\<diamond>\<phi>\<rfloor>"
   by simp
-
-theorem m:
-  assumes "S5_sem \<and> S5_ax"
-  shows "\<lfloor>\<^bold>\<box>p \<^bold>\<rightarrow> p\<rfloor>"
-  by simp
-
-  (* We work in logic S5. *) 
-  axiomatization where S5: "S5_sem" 
-
+  
+  (*Positive property*)
   consts P :: "(\<mu> \<Rightarrow> \<sigma>) \<Rightarrow> \<sigma>"  
 
   (* A God-like being possesses all positive properties. *)
@@ -52,7 +41,10 @@ theorem m:
   axiomatization where A5:  "\<lfloor>P NE\<rfloor>"
 
 theorem god:
-  shows "\<lfloor>\<^bold>\<box>\<^bold>\<exists>G\<rfloor>"
-  sledgehammer
+  shows "\<lfloor>\<^bold>\<box>(\<^bold>\<exists> G)\<rfloor>"
+  by (metis A1a A1b A2 A3 A4 A5 G_def NE_def ess_def) 
 
+subsection\<open>d\<close>
+text \<open>With this formalization, there is no difference between a proposition being globally valid
+and it being necessarily true. In fact, for any world w, we have "\<lfloor>P\<rfloor> = \emph{\box}P(w)"\<close>
 end
