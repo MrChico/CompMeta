@@ -70,27 +70,48 @@ shows "*\<lfloor> \<Psi> *\<rightarrow>  H (F \<Psi>) \<rfloor>*"
 
 (*Not sure whether we need to prove these, or if they can be axiomatized like this.
 Benzmüllers phrasing in the exercise sheet is a bit ambiguous*)
-axiomatization where TRAN: "*\<lfloor>G \<Psi> *\<rightarrow> G(G \<Psi>)\<rfloor>*"
-axiomatization where NOEND: "*\<lfloor> G \<Psi> *\<rightarrow> F \<Psi>\<rfloor>*"
-axiomatization where NOBEG: "*\<lfloor> H \<Psi> *\<rightarrow> P \<Psi>\<rfloor>*"
-axiomatization where LIN: "*\<lfloor> (P (F \<Psi>) *\<or> F (P \<Psi>)) *\<rightarrow> (P \<Psi>) *\<or> \<Psi> *\<or> (F \<Psi>) \<rfloor>*"
+theorem TRAN:
+  assumes Kt_sem
+  shows "*\<lfloor>G \<Psi> *\<rightarrow> G(G \<Psi>)\<rfloor>*"
+  using assms by blast
+
+theorem NOEND:
+  assumes Kt_sem
+  shows "*\<lfloor> G \<Psi> *\<rightarrow> F \<Psi>\<rfloor>*"
+  sorry
+
+theorem NOBEG:
+  assumes Kt_sem
+  shows "*\<lfloor> H \<Psi> *\<rightarrow> P \<Psi>\<rfloor>*"
+  using assms by blast
+
+theorem LIN:
+  assumes Kt_sem
+  shows "*\<lfloor> (P (F \<Psi>) *\<or> F (P \<Psi>)) *\<rightarrow> (P \<Psi>) *\<or> \<Psi> *\<or> (F \<Psi>) \<rfloor>*"
+  using assms by blast
 
 subsection\<open>(c)\<close>
 consts dead :: "\<mu>\<mu> \<Rightarrow> \<sigma>\<sigma>"
 theorem deadness:
   assumes "*\<lfloor> *\<forall>entity. dead(entity) *\<rightarrow> G dead(entity) \<rfloor>* \<and> *\<lfloor> *\<forall> entity. F dead(entity) \<rfloor>* \<and>
   (\<forall>entity. \<exists> t. \<not>(dead(entity)(t))) "
+
+ (* (* If any entity is dead, it will be dead forever. *)
+  assumes "*\<lfloor> *\<forall> entity. dead(entity) *\<rightarrow> G dead(entity) \<rfloor>*"
+
+  (* Eventually, every entity is dead. *)
+  assumes "*\<lfloor> *\<forall> entity. F dead(entity) \<rfloor>*"
+  
+  (* Every entity is not dead at some point. *)
+  assumes "(\<forall>entity. \<exists> t. \<not>(dead(entity)(t))) "*)
   (*
   AND "*\<lfloor> *\<forall> entity. F *\<not> dead(entity) *\<or> P *\<not> dead(entity) \<rfloor>*" *)
-  shows "*\<lfloor> *\<forall> entity. P (G *\<not> dead(entity)) \<rfloor>*"  
-nitpick [user_axioms]
+  shows "*\<lfloor> *\<forall> entity. P (G *\<not> dead(entity)) \<rfloor>*"
 
-proof -
- 
-  {fix entity
-    from assms have "*\<lfloor> F ( *\<not> dead(entity)) *\<or> P ( *\<not> dead(entity)) *\<or> *\<not> dead(entity)\<rfloor>* " by simp
-    {assume 1: "*\<lfloor> F ( *\<not> dead(entity)) \<rfloor>*"
-      from assms have 2: "*\<lfloor> F dead (entity)  \<rfloor>*" by simp
-      from 2 assms have "*\<lfloor> G dead (entity)  \<rfloor>*" using "1" by blast
- (*H\<Psi> \<rightarrow> HH\<Psi>*)
+  (* From this we can conclude, 
+     that every dead entity has not been dead at some point in the past. *)
+(*  shows "*\<lfloor>*\<forall>entity. dead(entity) *\<rightarrow> P *\<not> dead(entity)\<rfloor>*"  *)
+by (metis NOBEG assms)
+
+
 end
