@@ -78,19 +78,8 @@ axiomatization where LIN: "*\<lfloor> (P (F \<Psi>) *\<or> F (P \<Psi>)) *\<righ
 subsection\<open>(c)\<close>
 consts dead :: "\<mu>\<mu> \<Rightarrow> \<sigma>\<sigma>"
 theorem deadness:
-  assumes "*\<lfloor> *\<forall>entity. dead(entity) *\<rightarrow> G dead(entity) \<rfloor>* \<and> *\<lfloor> *\<forall> entity. F dead(entity) \<rfloor>* \<and>
-  (\<forall>entity. \<exists> t. \<not>(dead(entity)(t))) "
-  (*
-  AND "*\<lfloor> *\<forall> entity. F *\<not> dead(entity) *\<or> P *\<not> dead(entity) \<rfloor>*" *)
-  shows "*\<lfloor> *\<forall> entity. P (G *\<not> dead(entity)) \<rfloor>*"  
-nitpick [user_axioms]
+  assumes "*\<lfloor> *\<forall> entity.  (dead(entity) *\<rightarrow> G dead(entity)) *\<and> F dead(entity) *\<and> (F *\<not> dead(entity) *\<or> P *\<not> dead(entity) *\<or> *\<not> dead(entity)) \<rfloor>* "
+  shows "*\<lfloor> *\<forall> entity. P H *\<not> dead(entity) \<rfloor>*" 
+by (metis NOBEG assms)
 
-proof -
- 
-  {fix entity
-    from assms have "*\<lfloor> F ( *\<not> dead(entity)) *\<or> P ( *\<not> dead(entity)) *\<or> *\<not> dead(entity)\<rfloor>* " by simp
-    {assume 1: "*\<lfloor> F ( *\<not> dead(entity)) \<rfloor>*"
-      from assms have 2: "*\<lfloor> F dead (entity)  \<rfloor>*" by simp
-      from 2 assms have "*\<lfloor> G dead (entity)  \<rfloor>*" using "1" by blast
- (*H\<Psi> \<rightarrow> HH\<Psi>*)
 end
