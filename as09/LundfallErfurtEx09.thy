@@ -91,12 +91,8 @@ theorem LIN:
 subsection\<open>(c)\<close>
 consts dead :: "\<mu>\<mu> \<Rightarrow> \<sigma>\<sigma>"
 theorem deadness:
-
-  assumes "*\<lfloor> *\<forall> entity.  (dead(entity) *\<rightarrow> G dead(entity)) *\<and> F dead(entity) *\<and> (F *\<not> dead(entity) *\<or> P *\<not> dead(entity) *\<or> *\<not> dead(entity)) \<rfloor>* "
-
-
-  shows "*\<lfloor> *\<forall> entity. P (G *\<not> dead(entity)) \<rfloor>*"
-  nitpick
-
+  assumes "Kt_sem \<and> *\<lfloor> *\<forall> entity.  (dead(entity) *\<rightarrow> G dead(entity)) *\<and> F dead(entity) *\<and> (F *\<not> dead(entity) *\<or> P *\<not> dead(entity) *\<or> *\<not> dead(entity)) \<rfloor>*"
+  shows "*\<lfloor> *\<forall> entity. P (H *\<not> dead(entity)) \<rfloor>*"
+  by (metis assms)
 
 end
