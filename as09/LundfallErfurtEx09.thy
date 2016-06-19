@@ -68,8 +68,6 @@ theorem "SymII":
 shows "*\<lfloor> \<Psi> *\<rightarrow>  H (F \<Psi>) \<rfloor>*"
  by auto
 
-(*Not sure whether we need to prove these, or if they can be axiomatized like this.
-Benzmüllers phrasing in the exercise sheet is a bit ambiguous*)
 theorem TRAN:
   assumes Kt_sem
   shows "*\<lfloor>G \<Psi> *\<rightarrow> G(G \<Psi>)\<rfloor>*"
@@ -78,7 +76,7 @@ theorem TRAN:
 theorem NOEND:
   assumes Kt_sem
   shows "*\<lfloor> G \<Psi> *\<rightarrow> F \<Psi>\<rfloor>*"
-  sorry
+  using assms by blast
 
 theorem NOBEG:
   assumes Kt_sem
@@ -86,32 +84,22 @@ theorem NOBEG:
   using assms by blast
 
 theorem LIN:
-  assumes Kt_sem
+  assumes "Kt_sem"
   shows "*\<lfloor> (P (F \<Psi>) *\<or> F (P \<Psi>)) *\<rightarrow> (P \<Psi>) *\<or> \<Psi> *\<or> (F \<Psi>) \<rfloor>*"
-  using assms by blast
+  sledgehammer [provers = remote_leo2]
+  sorry
 
 subsection\<open>(c)\<close>
 consts dead :: "\<mu>\<mu> \<Rightarrow> \<sigma>\<sigma>"
 theorem deadness:
-  assumes "*\<lfloor> *\<forall>entity. dead(entity) *\<rightarrow> G dead(entity) \<rfloor>* \<and> *\<lfloor> *\<forall> entity. F dead(entity) \<rfloor>* \<and>
-  (\<forall>entity. \<exists> t. \<not>(dead(entity)(t))) "
 
- (* (* If any entity is dead, it will be dead forever. *)
-  assumes "*\<lfloor> *\<forall> entity. dead(entity) *\<rightarrow> G dead(entity) \<rfloor>*"
+  assumes "Kt_sem \<and> *\<lfloor> *\<forall> entity.  (dead(entity) *\<rightarrow> G dead(entity)) *\<and> F dead(entity) *\<and> (F *\<not> dead(entity) *\<or> P *\<not> dead(entity) *\<or> *\<not> dead(entity)) \<rfloor>* "
 
-  (* Eventually, every entity is dead. *)
-  assumes "*\<lfloor> *\<forall> entity. F dead(entity) \<rfloor>*"
-  
-  (* Every entity is not dead at some point. *)
-  assumes "(\<forall>entity. \<exists> t. \<not>(dead(entity)(t))) "*)
-  (*
-  AND "*\<lfloor> *\<forall> entity. F *\<not> dead(entity) *\<or> P *\<not> dead(entity) \<rfloor>*" *)
+
   shows "*\<lfloor> *\<forall> entity. P (G *\<not> dead(entity)) \<rfloor>*"
 
-  (* From this we can conclude, 
-     that every dead entity has not been dead at some point in the past. *)
-(*  shows "*\<lfloor>*\<forall>entity. dead(entity) *\<rightarrow> P *\<not> dead(entity)\<rfloor>*"  *)
-by (metis NOBEG assms)
+  sledgehammer [provers = remote_leo2]
+by (metis assms)
 
 
 end

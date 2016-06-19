@@ -71,7 +71,7 @@ abbreviation meqL    :: "\<mu>\<mu>\<Rightarrow>\<mu>\<mu>\<Rightarrow>\<sigma>\
 abbreviation P   :: "\<sigma>\<sigma>\<Rightarrow>\<sigma>\<sigma>" ("P_"[52]53) (*at some point in the past, ϕ holds*)
   where "P \<phi> \<equiv> \<lambda>w. (\<exists>v. v r w \<and> \<phi>(v))"
 abbreviation F   :: "\<sigma>\<sigma>\<Rightarrow>\<sigma>\<sigma>" ("F_"[52]53)(*at some point in the future, ϕ holds*)
-  where "F \<phi> \<equiv> \<lambda>w.\<exists>v. w r v \<and> \<phi>(v)"
+  where "F \<phi> \<equiv> \<lambda>w. (\<exists>v. w r v \<and> \<phi>(v))"
 abbreviation H   :: "\<sigma>\<sigma>\<Rightarrow>\<sigma>\<sigma>" ("H_"[52]53)(*In the past, ϕ has always been*)
   where "H \<phi> \<equiv> \<lambda>w.\<forall>v. v r w \<longrightarrow> \<phi>(v)"
 abbreviation G   :: "\<sigma>\<sigma>\<Rightarrow>\<sigma>\<sigma>" ("G_"[52]53)(*In the future, ϕ will always hold*)
@@ -96,7 +96,9 @@ abbreviation euclidean :: "bool"
   where "euclidean \<equiv> (\<forall>x y z. ((x r y) \<and> (x r z) \<longrightarrow> (y r z)))"
 
 abbreviation Kt_sem :: bool
- where "Kt_sem  \<equiv> transitive \<and> serial \<and> serial2 \<and> reflexive \<and> symmetric"
+ (* I'm not sure about putting reflexive here since it would imply now is some time into the future
+    and now is some time into the past. Otherwise is now where the future meets the pasts... Still not sure... *)
+ where "Kt_sem  \<equiv> transitive \<and> serial \<and> serial2 \<and> reflexive"
 
 
 (*
