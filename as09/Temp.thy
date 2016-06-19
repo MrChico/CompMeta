@@ -94,11 +94,13 @@ abbreviation transitive :: "bool"
   where "transitive \<equiv> (\<forall>x y z. ((x r y) \<and> (y r z) \<longrightarrow> (x r z)))"
 abbreviation euclidean :: "bool"
   where "euclidean \<equiv> (\<forall>x y z. ((x r y) \<and> (x r z) \<longrightarrow> (y r z)))"
+abbreviation total :: "bool"
+  where "total \<equiv> \<forall>x y. x r y \<or> y r x"
 
 abbreviation Kt_sem :: bool
  (* I'm not sure about putting reflexive here since it would imply now is some time into the future
     and now is some time into the past. Otherwise is now where the future meets the pasts... Still not sure... *)
- where "Kt_sem  \<equiv> transitive \<and> serial \<and> serial2 \<and> reflexive"
+ where "Kt_sem  \<equiv> transitive \<and> serial \<and> serial2 \<and> total"
 
 
 (*

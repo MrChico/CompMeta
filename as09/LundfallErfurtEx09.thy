@@ -86,20 +86,17 @@ theorem NOBEG:
 theorem LIN:
   assumes "Kt_sem"
   shows "*\<lfloor> (P (F \<Psi>) *\<or> F (P \<Psi>)) *\<rightarrow> (P \<Psi>) *\<or> \<Psi> *\<or> (F \<Psi>) \<rfloor>*"
-  sledgehammer [provers = remote_leo2]
-  sorry
+  using assms by blast
 
 subsection\<open>(c)\<close>
 consts dead :: "\<mu>\<mu> \<Rightarrow> \<sigma>\<sigma>"
 theorem deadness:
 
-  assumes "Kt_sem \<and> *\<lfloor> *\<forall> entity.  (dead(entity) *\<rightarrow> G dead(entity)) *\<and> F dead(entity) *\<and> (F *\<not> dead(entity) *\<or> P *\<not> dead(entity) *\<or> *\<not> dead(entity)) \<rfloor>* "
+  assumes "*\<lfloor> *\<forall> entity.  (dead(entity) *\<rightarrow> G dead(entity)) *\<and> F dead(entity) *\<and> (F *\<not> dead(entity) *\<or> P *\<not> dead(entity) *\<or> *\<not> dead(entity)) \<rfloor>* "
 
 
   shows "*\<lfloor> *\<forall> entity. P (G *\<not> dead(entity)) \<rfloor>*"
-
-  sledgehammer [provers = remote_leo2]
-by (metis assms)
+  nitpick
 
 
 end
