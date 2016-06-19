@@ -71,7 +71,7 @@ abbreviation meqL    :: "\<mu>\<mu>\<Rightarrow>\<mu>\<mu>\<Rightarrow>\<sigma>\
 abbreviation P   :: "\<sigma>\<sigma>\<Rightarrow>\<sigma>\<sigma>" ("P_"[52]53) (*at some point in the past, ϕ holds*)
   where "P \<phi> \<equiv> \<lambda>w. (\<exists>v. v r w \<and> \<phi>(v))"
 abbreviation F   :: "\<sigma>\<sigma>\<Rightarrow>\<sigma>\<sigma>" ("F_"[52]53)(*at some point in the future, ϕ holds*)
-  where "F \<phi> \<equiv> \<lambda>w.\<exists>v. w r v \<and> \<phi>(v)"
+  where "F \<phi> \<equiv> \<lambda>w. (\<exists>v. w r v \<and> \<phi>(v))"
 abbreviation H   :: "\<sigma>\<sigma>\<Rightarrow>\<sigma>\<sigma>" ("H_"[52]53)(*In the past, ϕ has always been*)
   where "H \<phi> \<equiv> \<lambda>w.\<forall>v. v r w \<longrightarrow> \<phi>(v)"
 abbreviation G   :: "\<sigma>\<sigma>\<Rightarrow>\<sigma>\<sigma>" ("G_"[52]53)(*In the future, ϕ will always hold*)
@@ -81,6 +81,28 @@ text {* Finally, a formula is valid if and only if it is satisfied in all worlds
 
 abbreviation valid :: "\<sigma>\<sigma>\<Rightarrow>bool" ("*\<lfloor>_\<rfloor>*"[8]109)
   where "*\<lfloor>p\<rfloor>* \<equiv> \<forall>w. p w"
+
+abbreviation reflexive 
+  where "reflexive \<equiv> (\<forall>x. x r x)"
+abbreviation symmetric 
+  where "symmetric \<equiv> (\<forall>x y. x r y \<longrightarrow> y r x)"
+abbreviation serial :: "bool"
+  where "serial \<equiv> (\<forall>x. \<exists>y. x r y)"
+abbreviation serial2 :: "bool"
+  where "serial2 \<equiv> (\<forall>x. \<exists>y. y r x)"
+abbreviation transitive :: "bool"
+  where "transitive \<equiv> (\<forall>x y z. ((x r y) \<and> (y r z) \<longrightarrow> (x r z)))"
+abbreviation euclidean :: "bool"
+  where "euclidean \<equiv> (\<forall>x y z. ((x r y) \<and> (x r z) \<longrightarrow> (y r z)))"
+abbreviation total :: "bool"
+  where "total \<equiv> \<forall>x y. x r y \<or> y r x"
+
+abbreviation Kt_sem :: bool
+ (* I'm not sure about putting reflexive here since it would imply now is some time into the future
+    and now is some time into the past. Otherwise is now where the future meets the pasts... Still not sure... *)
+ where "Kt_sem  \<equiv> transitive \<and> serial \<and> serial2 \<and> total"
+
+
 (*
 section {* Axiomatizations of Further Systems *}
 

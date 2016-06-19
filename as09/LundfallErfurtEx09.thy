@@ -68,18 +68,31 @@ theorem "SymII":
 shows "*\<lfloor> \<Psi> *\<rightarrow>  H (F \<Psi>) \<rfloor>*"
  by auto
 
-(*Not sure whether we need to prove these, or if they can be axiomatized like this.
-Benzmüllers phrasing in the exercise sheet is a bit ambiguous*)
-axiomatization where TRAN: "*\<lfloor>G \<Psi> *\<rightarrow> G(G \<Psi>)\<rfloor>*"
-axiomatization where NOEND: "*\<lfloor> G \<Psi> *\<rightarrow> F \<Psi>\<rfloor>*"
-axiomatization where NOBEG: "*\<lfloor> H \<Psi> *\<rightarrow> P \<Psi>\<rfloor>*"
-axiomatization where LIN: "*\<lfloor> (P (F \<Psi>) *\<or> F (P \<Psi>)) *\<rightarrow> (P \<Psi>) *\<or> \<Psi> *\<or> (F \<Psi>) \<rfloor>*"
+theorem TRAN:
+  assumes Kt_sem
+  shows "*\<lfloor>G \<Psi> *\<rightarrow> G(G \<Psi>)\<rfloor>*"
+  using assms by blast
+
+theorem NOEND:
+  assumes Kt_sem
+  shows "*\<lfloor> G \<Psi> *\<rightarrow> F \<Psi>\<rfloor>*"
+  using assms by blast
+
+theorem NOBEG:
+  assumes Kt_sem
+  shows "*\<lfloor> H \<Psi> *\<rightarrow> P \<Psi>\<rfloor>*"
+  using assms by blast
+
+theorem LIN:
+  assumes "Kt_sem"
+  shows "*\<lfloor> (P (F \<Psi>) *\<or> F (P \<Psi>)) *\<rightarrow> (P \<Psi>) *\<or> \<Psi> *\<or> (F \<Psi>) \<rfloor>*"
+  using assms by blast
 
 subsection\<open>(c)\<close>
 consts dead :: "\<mu>\<mu> \<Rightarrow> \<sigma>\<sigma>"
 theorem deadness:
-  assumes "*\<lfloor> *\<forall> entity.  (dead(entity) *\<rightarrow> G dead(entity)) *\<and> F dead(entity) *\<and> (F *\<not> dead(entity) *\<or> P *\<not> dead(entity) *\<or> *\<not> dead(entity)) \<rfloor>* "
-  shows "*\<lfloor> *\<forall> entity. P H *\<not> dead(entity) \<rfloor>*" 
-by (metis NOBEG assms)
+  assumes "Kt_sem \<and> *\<lfloor> *\<forall> entity.  (dead(entity) *\<rightarrow> G dead(entity)) *\<and> F dead(entity) *\<and> (F *\<not> dead(entity) *\<or> P *\<not> dead(entity) *\<or> *\<not> dead(entity)) \<rfloor>*"
+  shows "*\<lfloor> *\<forall> entity. P (H *\<not> dead(entity)) \<rfloor>*"
+  by (metis assms)
 
 end
