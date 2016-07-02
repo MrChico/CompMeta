@@ -68,6 +68,7 @@ primrec free :: "P \<Rightarrow> n set" where
   | "free (P \<parallel> Q) = free P \<union> free Q"
   | "free (\<acute>x`) = {x}"
 
+(*Gives the set of bound names in a process*)
 primrec bound :: "P \<Rightarrow> n set" where
   "bound \<^bold>0 = {}"
   | "bound (x \<leftarrow> y . P) = {y} \<union> bound(P)"
@@ -75,40 +76,25 @@ primrec bound :: "P \<Rightarrow> n set" where
   | "bound (P \<parallel> Q) = bound P \<union> bound Q"
   | "bound (\<acute>x`) = {}"
 
+(*Names occurring in a process*)
 abbreviation names :: "P \<Rightarrow> n set"
   where "names P \<equiv> free(P) \<union> bound(P)"
-(*
-abbreviation Max :: "nat set \<Rightarrow> nat"
-  where "Max A \<equiv> fold1 max"
-*)
+
 (*quote depth*)
-
-
 function n_depth :: "n \<Rightarrow> nat" ("#" 60) 
   and P_depth :: "P \<Rightarrow> nat" ("#" 60)
   where
-  "n_depth `P\<acute> = (1::nat) + (P_depth P)"
+  "n_depth `P\<acute> = 1 + (P_depth P)"
   | "P_depth P = (if (free P \<noteq> {}) then Max({ ( n_depth x ) | x. x \<in> (names P)}) else 0)"
   apply pat_completeness
   apply blast
   apply simp
   by blast
 termination
-  sorry  
-  (*apply (relation "measure (\<lambda> `P\<acute> .  Inl `P\<acute> \<Rightarrow> P | )")
-  by (relation "measure (\<lambda>(`P\<acute> Q). (case x of Inl n)") auto
-(*  apply lexicographic_order
-*)*)
-value "n_depth `\<^bold>0\<acute>" 
-theorem nth:
-  shows "n_depth `\<^bold>0\<acute> = 1"
-  apply (induct P rule: n_depth.induct)
-  apply (simp add: n_depth.induct) 
+  sorry  (*Even without termination proof, we can use the n_depth/P_depth function*)
 
 
-by blast
-
-(*substitution*)
+(*---Substitution---*)
 (*Takes a process, specifies the names to be substituted and returns a process*)
 abbreviation sn :: "n \<Rightarrow> n \<Rightarrow> n \<Rightarrow> n" where
   "sn x q p \<equiv> (if (x =N p) then q else x)" 
@@ -117,8 +103,10 @@ abbreviation sn :: "n \<Rightarrow> n \<Rightarrow> n \<Rightarrow> n" where
 primrec s :: "P \<Rightarrow> n \<Rightarrow> n \<Rightarrow> P" ("(_) {_\<setminus>_}" 52)
 where "(\<^bold>0){_\<setminus>_}             = \<^bold>0"
    | "(R \<parallel> S){q\<setminus>p}          = ((R){q\<setminus>p}) \<parallel> ((S){q\<setminus>p})" 
-   | "( x \<leftarrow> y . R){q\<setminus>p}    = R" 
+   | "( x \<leftarrow> y . R){q\<setminus>p}    = (sn x q p) \<leftarrow> z . ((R {z\<setminus>y}){q\<setminus>p})" 
    | "( x\<triangleleft>R\<triangleright>) {q\<setminus>p}         = R"
    | "(\<acute>x`){q\<setminus>p}            = (\<acute>x`)"
-
+(*
+  "s x\<leftarrow>y.R q p = (sn x q p)\<leftarrow>z.(s ((s R z y) q p))" 
+*)
 end
