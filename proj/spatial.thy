@@ -10,6 +10,9 @@ datatype P = Null             ("\<^bold>0")
            | par P P          (infixl "\<parallel>" 51)    
      and n = quote P          ("`_\<acute>")
 
+abbreviation sugger :: "n \<Rightarrow> n \<Rightarrow> P" ("_[_]")
+  where "sugger x y \<equiv> x\<triangleleft>\<acute>y`\<triangleright>"
+
 abbreviation zero :: n
   where "zero \<equiv> `\<^bold>0\<acute>"
 
