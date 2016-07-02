@@ -68,19 +68,45 @@ primrec free :: "P \<Rightarrow> n set" where
   | "free (P \<parallel> Q) = free P \<union> free Q"
   | "free (\<acute>x`) = {x}"
 
+primrec bound :: "P \<Rightarrow> n set" where
+  "bound \<^bold>0 = {}"
+  | "bound (x \<leftarrow> y . P) = {y} \<union> bound(P)"
+  | "bound (x \<triangleleft> P \<triangleright>) = bound P"
+  | "bound (P \<parallel> Q) = bound P \<union> bound Q"
+  | "bound (\<acute>x`) = {}"
 
+abbreviation names :: "P \<Rightarrow> n set"
+  where "names P \<equiv> free(P) \<union> bound(P)"
 (*
 abbreviation Max :: "nat set \<Rightarrow> nat"
   where "Max A \<equiv> fold1 max"
 *)
 (*quote depth*)
 
+
 function n_depth :: "n \<Rightarrow> nat" ("#" 60) 
   and P_depth :: "P \<Rightarrow> nat" ("#" 60)
   where
-  "n_depth `P\<acute> = (1::nat) + P_depth P"
-  | "P_depth P = (if (free P \<noteq> {}) then Max({ ( n_depth x ) | x. x \<in> free P}) else 0)"
-  sledgehammer
+  "n_depth `P\<acute> = (1::nat) + (P_depth P)"
+  | "P_depth P = (if (free P \<noteq> {}) then Max({ ( n_depth x ) | x. x \<in> (names P)}) else 0)"
+  apply pat_completeness
+  apply blast
+  apply simp
+  by blast
+termination
+  sorry  
+  (*apply (relation "measure (\<lambda> `P\<acute> .  Inl `P\<acute> \<Rightarrow> P | )")
+  by (relation "measure (\<lambda>(`P\<acute> Q). (case x of Inl n)") auto
+(*  apply lexicographic_order
+*)*)
+value "n_depth `\<^bold>0\<acute>" 
+theorem nth:
+  shows "n_depth `\<^bold>0\<acute> = 1"
+  apply (induct P rule: n_depth.induct)
+  apply (simp add: n_depth.induct) 
+
+
+by blast
 
 (*substitution*)
 (*Takes a process, specifies the names to be substituted and returns a process*)
