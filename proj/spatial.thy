@@ -53,4 +53,11 @@ abbreviation StructEquiv
 
 axiomatization where name_equivalence: "QuoteDrop \<and> StructEquiv"
 
+theorem testerr:
+shows "`p \<parallel> (\<^bold>0 \<parallel> q)\<acute> =N `q \<parallel> p\<acute>"
+by (meson leastConguence name_equivalence)
+
+
+(*substitution*)
+consts s :: "
 end
