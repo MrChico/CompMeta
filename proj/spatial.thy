@@ -116,7 +116,7 @@ abbreviation sn :: "n \<Rightarrow> n \<Rightarrow> n \<Rightarrow> n" where
 primrec s :: "P \<Rightarrow> n \<Rightarrow> n \<Rightarrow> P" ("(_) {_\<setminus>_}" 52)
 where "(\<^bold>0){_\<setminus>_}             = \<^bold>0"
    | "(R \<parallel> S){q\<setminus>p}          = ((R){q\<setminus>p}) \<parallel> ((S){q\<setminus>p})" 
-   | "( x \<leftarrow> y . R){q\<setminus>p}    = (sn x q p) \<leftarrow> z . ((R {z\<setminus>y}){q\<setminus>p})" 
+   | "( x \<leftarrow> y . R){q\<setminus>p}    = ((sn x q p) \<leftarrow> (z)  . ((R {z\<setminus>y}){q\<setminus>p}))" (*with z = (newName (P_depth(R)))*) 
    | "( x\<triangleleft>R\<triangleright>) {q\<setminus>p}         = R"
    | "(\<acute>x`){q\<setminus>p}            = (\<acute>x`)"
 (*
