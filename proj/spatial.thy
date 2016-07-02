@@ -7,7 +7,7 @@ datatype P = Null             ("\<^bold>0")
            | input n n P      ("_\<leftarrow>_._" 60)
            | lift n P         ("_\<triangleleft>_\<triangleright>" 20)
            | drop n           ("\<acute>_`" 30)
-           | par P P          (infixl "\<parallel>" 51)    
+           | par P P          (infixl "\<parallel>" 53)    
      and n = quote P          ("`_\<acute>")
 
 abbreviation sugger :: "n \<Rightarrow> n \<Rightarrow> P" ("_[_]")
@@ -63,12 +63,15 @@ by (meson leastConguence name_equivalence)
 
 (*substitution*)
 (*Takes a process, specifies the names to be substituted and returns a process*)
-function sn :: "n \<Rightarrow> n \<Rightarrow> n \<Rightarrow> n" where
-  "sn `x\<acute> `q\<acute> `p\<acute> = (if (`x\<acute> =N `p\<acute>) then `q\<acute> else `x\<acute>)" 
+abbreviation sn :: "n \<Rightarrow> n \<Rightarrow> n \<Rightarrow> n" where
+  "sn x q p \<equiv> (if (x =N p) then q else x)" 
+
   
-primrec s :: "P \<Rightarrow> n \<Rightarrow> n \<Rightarrow> P" where
-  "s \<^bold>0 _ _ = \<^bold>0" |
-  "s (R \<parallel> S) q p = s R q p \<parallel> s S q p" |
-  "s x\<leftarrow>y.R q p = (sn x q p)\<leftarrow>z.(s ((s R z y) q p))" 
+primrec s :: "P \<Rightarrow> n \<Rightarrow> n \<Rightarrow> P" ("(_) {_\<setminus>_}" 52)
+where "(\<^bold>0){_\<setminus>_}             = \<^bold>0"
+   | "(R \<parallel> S){q\<setminus>p}          = ((R){q\<setminus>p}) \<parallel> ((S){q\<setminus>p})" 
+   | "( x \<leftarrow> y . R){q\<setminus>p}    = R" 
+   | "( x\<triangleleft>R\<triangleright>) {q\<setminus>p}         = R"
+   | "(\<acute>x`){q\<setminus>p}            = (\<acute>x`)"
 
 end
