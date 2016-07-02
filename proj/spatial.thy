@@ -68,6 +68,10 @@ primrec free :: "P \<Rightarrow> n set" where
   | "free (P \<parallel> Q) = free P \<union> free Q"
   | "free (\<acute>x`) = {x}"
 
+value "free (zero \<leftarrow> zero.\<^bold>0)"
+value "free (\<^bold>0\<parallel>\<^bold>0)"
+value "free (\<acute>zero`)"
+value "free (zero\<triangleleft>\<^bold>0\<triangleright>)"
 
 (*
 abbreviation Max :: "nat set \<Rightarrow> nat"
@@ -75,12 +79,32 @@ abbreviation Max :: "nat set \<Rightarrow> nat"
 *)
 (*quote depth*)
 
-function n_depth :: "n \<Rightarrow> nat" ("#" 60) 
-  and P_depth :: "P \<Rightarrow> nat" ("#" 60)
+
+function n_depth :: "n \<Rightarrow> nat"
+  and P_depth :: "P \<Rightarrow> nat"
   where
-  "n_depth `P\<acute> = (1::nat) + P_depth P"
-  | "P_depth P = (if (free P \<noteq> {}) then Max({ ( n_depth x ) | x. x \<in> free P}) else 0)"
-  sledgehammer
+  "n_depth `P\<acute> = (1::nat) + (P_depth P)"
+  | "P_depth P = (if (free P \<noteq> {}) then Max({ ( n_depth x ) | x. x \<in> free P}) else 0::nat)"  
+  apply pat_completeness
+  apply blast
+  apply simp
+  by blast
+termination
+sorry
+
+value "P_depth (\<acute>zero`)"
+
+function newName :: "nat \<Rightarrow> n"
+  where "newName 0 = `\<^bold>0\<acute>"
+       |"newName (Suc n) = `(sugger (newName n) (newName n))\<acute>"
+using not0_implies_Suc apply blast
+apply simp
+apply simp
+by blast
+termination
+using "termination" by blast
+
+value "newName 3"
 
 (*substitution*)
 (*Takes a process, specifies the names to be substituted and returns a process*)
