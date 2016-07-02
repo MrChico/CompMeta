@@ -59,5 +59,13 @@ by (meson leastConguence name_equivalence)
 
 
 (*substitution*)
-consts s :: "
+(*Takes a process, specifies the names to be substituted and returns a process*)
+function sn :: "n \<Rightarrow> n \<Rightarrow> n \<Rightarrow> n" where
+  "sn `x\<acute> `q\<acute> `p\<acute> = (if (`x\<acute> =N `p\<acute>) then `q\<acute> else `x\<acute>)" 
+  
+primrec s :: "P \<Rightarrow> n \<Rightarrow> n \<Rightarrow> P" where
+  "s \<^bold>0 _ _ = \<^bold>0" |
+  "s (R \<parallel> S) q p = s R q p \<parallel> s S q p" |
+  "s x\<leftarrow>y.R q p = (sn x q p)\<leftarrow>z.(s ((s R z y) q p))" 
+
 end
