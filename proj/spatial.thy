@@ -23,19 +23,14 @@ consts conguence :: "P \<Rightarrow> P \<Rightarrow> bool" (infix "=C" 42)
 
 abbreviation reflexive
   where "reflexive \<equiv> \<forall> r. r =C r"
-
 abbreviation transitive
   where "transitive \<equiv> \<forall> x. \<forall> y. \<forall> z. x =C y \<and> y =C z \<longrightarrow> x =C z"
-
 abbreviation symmetric
   where "symmetric \<equiv> \<forall> x. \<forall> y. x =C y \<longrightarrow> y =C x"
-
 abbreviation Id 
   where "Id \<equiv> \<forall> p. (\<^bold>0 \<parallel> p) =C p"
-
 abbreviation Sym
   where "Sym \<equiv> \<forall> p. \<forall> q. p \<parallel> q =C q \<parallel> p"
-
 abbreviation Assoc
   where "Assoc \<equiv> \<forall> p. \<forall> q. \<forall> r. (p \<parallel> q) \<parallel> r =C p \<parallel> (q \<parallel> r)"
 
@@ -47,7 +42,15 @@ using leastConguence by blast
 
 theorem testtie:
   shows "p \<parallel> (\<^bold>0 \<parallel> q) =C q \<parallel> p"  
-by (meson leastConguence)
+by (metis leastConguence)
+
 (*Name equivalence*)
+consts nameEq :: "n \<Rightarrow> n \<Rightarrow> bool" (infix "=N" 42)
+abbreviation QuoteDrop
+  where "QuoteDrop \<equiv> \<forall>x. `\<acute>x`\<acute> =N x"
+abbreviation StructEquiv
+  where "StructEquiv \<equiv> \<forall>p q. p =C q \<longrightarrow> `p\<acute> =N `q\<acute>"
+
+axiomatization where name_equivalence: "QuoteDrop \<and> StructEquiv"
 
 end
