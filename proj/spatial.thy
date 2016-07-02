@@ -60,6 +60,27 @@ theorem testerr:
 shows "`p \<parallel> (\<^bold>0 \<parallel> q)\<acute> =N `q \<parallel> p\<acute>"
 by (meson leastConguence name_equivalence)
 
+(*Gives the set of free names in a process*)
+primrec free :: "P \<Rightarrow> n set" where
+  "free \<^bold>0 = {}"
+  | "free (x \<leftarrow> y . P) = {x} \<union> (free(P) - {y})"
+  | "free (x \<triangleleft> P \<triangleright>) = {x} \<union> free P"
+  | "free (P \<parallel> Q) = free P \<union> free Q"
+  | "free (\<acute>x`) = {x}"
+
+
+(*
+abbreviation Max :: "nat set \<Rightarrow> nat"
+  where "Max A \<equiv> fold1 max"
+*)
+(*quote depth*)
+
+function n_depth :: "n \<Rightarrow> nat" ("#" 60) 
+  and P_depth :: "P \<Rightarrow> nat" ("#" 60)
+  where
+  "n_depth `P\<acute> = (1::nat) + P_depth P"
+  | "P_depth P = (if (free P \<noteq> {}) then Max({ ( n_depth x ) | x. x \<in> free P}) else 0)"
+  sledgehammer
 
 (*substitution*)
 (*Takes a process, specifies the names to be substituted and returns a process*)
