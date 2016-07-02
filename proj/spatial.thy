@@ -68,29 +68,30 @@ primrec free :: "P \<Rightarrow> n set" where
   | "free (P \<parallel> Q) = free P \<union> free Q"
   | "free (\<acute>x`) = {x}"
 
-value "free (zero \<leftarrow> zero.\<^bold>0)"
-value "free (\<^bold>0\<parallel>\<^bold>0)"
-value "free (\<acute>zero`)"
-value "free (zero\<triangleleft>\<^bold>0\<triangleright>)"
+(*Gives the set of bound names in a process*)
+primrec bound :: "P \<Rightarrow> n set" where
+  "bound \<^bold>0 = {}"
+  | "bound (x \<leftarrow> y . P) = {y} \<union> bound(P)"
+  | "bound (x \<triangleleft> P \<triangleright>) = bound P"
+  | "bound (P \<parallel> Q) = bound P \<union> bound Q"
+  | "bound (\<acute>x`) = {}"
 
-(*
-abbreviation Max :: "nat set \<Rightarrow> nat"
-  where "Max A \<equiv> fold1 max"
-*)
+(*Names occurring in a process*)
+abbreviation names :: "P \<Rightarrow> n set"
+  where "names P \<equiv> free(P) \<union> bound(P)"
+
 (*quote depth*)
-
-
-function n_depth :: "n \<Rightarrow> nat"
-  and P_depth :: "P \<Rightarrow> nat"
+function n_depth :: "n \<Rightarrow> nat" ("#" 60) 
+  and P_depth :: "P \<Rightarrow> nat" ("#" 60)
   where
-  "n_depth `P\<acute> = (1::nat) + (P_depth P)"
-  | "P_depth P = (if (free P \<noteq> {}) then Max({ ( n_depth x ) | x. x \<in> free P}) else 0::nat)"  
+  "n_depth `P\<acute> = 1 + (P_depth P)"
+  | "P_depth P = (if (free P \<noteq> {}) then Max({ ( n_depth x ) | x. x \<in> (names P)}) else 0)"
   apply pat_completeness
   apply blast
   apply simp
   by blast
 termination
-sorry
+  sorry  (*Even without termination proof, we can use the n_depth/P_depth function*)
 
 value "P_depth (\<acute>zero`)"
 
@@ -115,8 +116,10 @@ abbreviation sn :: "n \<Rightarrow> n \<Rightarrow> n \<Rightarrow> n" where
 primrec s :: "P \<Rightarrow> n \<Rightarrow> n \<Rightarrow> P" ("(_) {_\<setminus>_}" 52)
 where "(\<^bold>0){_\<setminus>_}             = \<^bold>0"
    | "(R \<parallel> S){q\<setminus>p}          = ((R){q\<setminus>p}) \<parallel> ((S){q\<setminus>p})" 
-   | "( x \<leftarrow> y . R){q\<setminus>p}    = R" 
+   | "( x \<leftarrow> y . R){q\<setminus>p}    = (sn x q p) \<leftarrow> z . ((R {z\<setminus>y}){q\<setminus>p})" 
    | "( x\<triangleleft>R\<triangleright>) {q\<setminus>p}         = R"
    | "(\<acute>x`){q\<setminus>p}            = (\<acute>x`)"
-
+(*
+  "s x\<leftarrow>y.R q p = (sn x q p)\<leftarrow>z.(s ((s R z y) q p))" 
+*)
 end
