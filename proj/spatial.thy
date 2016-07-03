@@ -4,11 +4,14 @@ begin
 
 (*The mutually recursive datatypes of processes and names*)
 datatype P = Null             ("\<^bold>0")
-           | Input n n P      ("_\<leftarrow>_._" 60)
-           | Lift n P         ("_\<triangleleft>_\<triangleright>" 20)
-           | Drop n           ("\<acute>_`" 30)
-           | Par P P          (infixl "\<parallel>" 53)    
+           | Input n n P      ("_\<leftarrow>_._" 80)
+           | Lift n P         ("_\<triangleleft>_\<triangleright>" 80)
+           | Drop n           ("\<acute>_`" 80)
+           | Par P P          (infixl "\<parallel>" 75)    
      and n = Quote P          ("`_\<acute>")
+termination
+  apply size_change
+  proof - qed
 
 (*Syntactic sugar for output on a channel*)
 abbreviation Output :: "n \<Rightarrow> n \<Rightarrow> P" ("_[_]")
@@ -17,11 +20,31 @@ abbreviation Output :: "n \<Rightarrow> n \<Rightarrow> P" ("_[_]")
 abbreviation zero :: n
   where "zero \<equiv> `\<^bold>0\<acute>"
 
-
 value "zero \<leftarrow> zero.\<^bold>0"
 value "\<^bold>0\<parallel>\<^bold>0"
 value "\<acute>zero`"
 value "zero\<triangleleft>\<^bold>0\<triangleright>"
+
+(*
+function congr :: "P \<Rightarrow> P \<Rightarrow> bool" (infix "=C" 70)
+  where 
+    "Null =C Null = True"
+  | "Null =C P \<parallel> Q = (P \<parallel> Q =C Null)"
+  | "Null =C Null \<parallel> P = (P =C Null)"
+  | "Null \<parallel> P =C Null = (P =C Null)"
+  | "Null =C (x\<leftarrow>y . P) = (Null = (x\<leftarrow>y . P))"
+  | "Null =C (x \<triangleleft> P \<triangleright>) = (Null = (x \<triangleleft> P \<triangleright>))"
+  | "Null =C \<acute>P` = (Null = \<acute>P`)"
+  | "(x\<leftarrow>y . P) =C Q = ((x\<leftarrow>y . P) = Q)"
+  | "(x \<triangleleft> P \<triangleright> =C Q) = (x \<triangleleft> P \<triangleright> = Q)"
+  | "\<acute>P` =C Q = (\<acute>P` = Q)"
+  | "P \<parallel> (Q \<parallel> R) =C S = ((P \<parallel> Q) \<parallel> R) =C S"
+  | " P \<parallel> Q =C R \<parallel> S = ((P =C R \<and> Q =C S) \<or> (P =C S \<and> Q =C R))"
+  | " P \<parallel> Q =C R = ((P =C R \<and> Q =C Null) \<or> (P =C Null \<and> Q =C R))"
+  sorry
+termination
+  sorry
+*)
 
 value "(Null \<parallel> Null) =C Null"
 
@@ -42,20 +65,10 @@ abbreviation Assoc
 
 axiomatization where leastConguence: "reflexive \<and> transitive \<and> symmetric \<and> Id \<and> Sym \<and> Assoc"
 
-quotient_type congre = "P set" / "leastCongruence" 
-
 theorem test:
-  shows "\<forall> p.(p \<parallel> \<^bold>0) =C p"
+  shows "(p \<parallel> \<^bold>0) =C p"
 using leastConguence by blast
-(*
-theorem testtie:
-  shows "p \<parallel> (\<^bold>0 \<parallel> q) =C q \<parallel> p"  
-by (metis leastConguence)
-*)
-abbreviation nEq :: "n \<Rightarrow> n \<Rightarrow> bool" (infix "=N" 42)
-  where "nEq \<equiv> \<lambda> x y . `\<acute>y`\<acute> = x \<or> `\<acute>x`\<acute> = y \<or> (\<exists> z1::P . \<exists> z2::P. `z1\<acute> = x \<and> `z2\<acute> = y \<and> z1 =C z2)"
 
-(*Name equivalence*)
 (*
 consts nameEq :: "n \<Rightarrow> n \<Rightarrow> bool" (infix "=N" 42)
 abbreviation QuoteDrop
@@ -72,6 +85,18 @@ abbreviation symmetricN
 axiomatization where name_equivalence: "QuoteDrop \<and> StructEquiv \<and> reflexiveN \<and> transitiveN \<and> symmetricN"
 *)
 
+(*Name equivalence*)
+function name_equivalence :: "n \<Rightarrow> n \<Rightarrow> bool" (infix "=N" 52)
+  where "`\<acute>x`\<acute> =N y = (x = y)"
+  | "zero =N `y\<acute> = (Null =C y)"
+  | "((` (Input x y P) \<acute>) =N `z\<acute>) = ((Input x y P)  =C z)"
+  | "((` P \<parallel> Q \<acute>) =N `z\<acute>) = ( P \<parallel> Q  =C z)"
+  | "((` x\<triangleleft>P\<triangleright> \<acute>) =N `z\<acute>) = (x\<triangleleft>P \<triangleright> =C z)"
+  apply pat_completeness
+by auto
+termination
+  by lexicographic_order
+
 abbreviation reflexiveR
   where "reflexiveR \<equiv> \<lambda> R. \<forall> r. R r r"
 abbreviation transitiveR
@@ -79,24 +104,22 @@ abbreviation transitiveR
 abbreviation symmetricR
   where "symmetricR \<equiv> \<lambda> R. \<forall> x. \<forall> y. R x y \<longrightarrow> R y x"
 
-theorem name_congruence_reflexive:
-  shows "reflexiveR nEq"
-by (metis leastConguence n.exhaust)
+theorem name_equivalence_reflexive:
+  shows "reflexiveR name_equivalence"
+sorry 
+theorem name_equivalence_symmetric:
+  shows "symmetricR name_equivalence"
+sorry
 
-theorem name_congruence_symmetric:
-  shows "symmetricR nEq"
-using leastConguence by blast
-
-theorem name_congruence_transitive:
-  shows "transitiveR nEq"
-
+theorem name_equivalence_transitive:
+  shows "transitiveR name_equivalence"
+sorry
 
 value "`p \<parallel> (\<^bold>0 \<parallel> q)\<acute> =N `q \<parallel> p\<acute>"
 
 theorem testerr:
   shows "`p \<parallel> (\<^bold>0 \<parallel> q)\<acute> =N `q \<parallel> p\<acute>"
-by (metis leastConguence)
-
+sorry
 
 (*Gives the set of free names in a process*)
 fun free :: "P \<Rightarrow> n set" where
@@ -117,6 +140,7 @@ fun bound :: "P \<Rightarrow> n set" where
 (*Names occurring in a process*)
 fun names :: "P \<Rightarrow> n set"
   where "names P = free(P) \<union> bound(P)"
+
 (*quote depth*)
 function n_depth :: "n \<Rightarrow> nat" ("#" 60) 
   and P_depth :: "P \<Rightarrow> nat" ("#" 60)
@@ -128,7 +152,6 @@ function n_depth :: "n \<Rightarrow> nat" ("#" 60)
   apply simp
   by blast
 termination
-  by (simp add: name_congruence_reflexive)
   sorry  (*Even without termination proof, we can use the n_depth/P_depth function*)
 
 value "P_depth (\<acute>zero`)"
@@ -162,11 +185,11 @@ function s :: "P \<Rightarrow> n \<Rightarrow> n \<Rightarrow> P" ("(_) {_\<setm
 where "(\<^bold>0){_\<setminus>_}             = \<^bold>0"
    | "(R \<parallel> S){q\<setminus>p}          = ((R){q\<setminus>p}) \<parallel> ((S){q\<setminus>p})" 
    | "( x \<leftarrow> y . R){q\<setminus>p}    = ((sn x q p) \<leftarrow> (z q p R)  . ((R {(z q p R)\<setminus>y}){q\<setminus>p}))"  
-   | "( x\<triangleleft>R\<triangleright>) {q\<setminus>p}         = R"
-   | "(\<acute>x`){q\<setminus>p}            = (if x =N p then \<acute>q` else \<acute>x`)"
-sorry
+   | "( x\<triangleleft>R\<triangleright>) {q\<setminus>p}         = (sn x q p) \<triangleleft>R{q\<setminus>p}\<triangleright>"
+   | "(\<acute>x`){q\<setminus>p}            = (if (x =N p) then \<acute>q` else \<acute>x`)"
+apply pat_completeness by auto
 termination
-sorry
+  sorry (*induction measure on n_depth*)
 
 value "\<^bold>0{zero\<setminus>zero}"
 value "\<acute>zero` {two\<setminus> zero}"
