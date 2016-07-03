@@ -16,6 +16,7 @@ abbreviation Output :: "n \<Rightarrow> n \<Rightarrow> P" ("_[_]")
 abbreviation zero :: n
   where "zero \<equiv> `\<^bold>0\<acute>"
 
+
 value "zero \<leftarrow> zero.\<^bold>0"
 value "\<^bold>0\<parallel>\<^bold>0"
 value "\<acute>zero`"
@@ -72,11 +73,11 @@ abbreviation StructEquiv
   where "StructEquiv \<equiv> \<forall>p q. p =C q \<longrightarrow> `p\<acute> =N `q\<acute>"
 
 axiomatization where name_equivalence: "QuoteDrop \<and> StructEquiv"
-
+(*
 theorem testerr:
 shows "`p \<parallel> (\<^bold>0 \<parallel> q)\<acute> =N `q \<parallel> p\<acute>"
 by (meson leastConguence name_equivalence)
-
+*)
 (*Gives the set of free names in a process*)
 fun free :: "P \<Rightarrow> n set" where
   "free \<^bold>0 = {}"
@@ -107,39 +108,51 @@ function n_depth :: "n \<Rightarrow> nat" ("#" 60)
   apply simp
   by blast
 termination
-  (*apply lexicographic_order*)
-  sorry
-  (*
-  apply (relation "measure (\<lambda>x. 2)")
-  apply simp
-  apply (induct _ rule: n.induct)
-  by (simp add: name_equivalence)
-
-  apply simp
-  apply simp
-  apply simp
-  apply 
-  apply simp
-  apply simp
-  apply simp
-  apply simp
-  apply simp
-  sledgehammer
-  sledgehammer
   sorry  (*Even without termination proof, we can use the n_depth/P_depth function*)
-*)
-(*---Substitution---*)
+
+value "P_depth (\<acute>zero`)"
+
+fun newName :: "nat \<Rightarrow> n"
+  where "newName 0 = `\<^bold>0\<acute>"
+       |"newName (Suc n) = `(Output (newName n) (newName n))\<acute>"
+
+abbreviation one :: n
+  where "one \<equiv> newName 1"
+abbreviation two :: n
+  where "two \<equiv> newName 2"
+abbreviation three :: n
+  where "three \<equiv> newName 3"
+
+
+(*substitution*)
 (*Takes a process, specifies the names to be substituted and returns a process*)
 abbreviation sn :: "n \<Rightarrow> n \<Rightarrow> n \<Rightarrow> n" where
   "sn x q p \<equiv> (if (x =N p) then q else x)" 
 
+value "(sn zero zero zero)"
+value "newName (Max ({(n_depth zero), 0::nat}))"
+
+(*with z = (newName (P_depth(R)))*)
+abbreviation z
+  where "z \<equiv> \<lambda> q::n.  \<lambda> p::n. \<lambda> R::P. newName (Max({(n_depth(q)), (P_depth(R)), (n_depth(p)) }))"
+  
+
 function s :: "P \<Rightarrow> n \<Rightarrow> n \<Rightarrow> P" ("(_) {_\<setminus>_}" 52)
 where "(\<^bold>0){_\<setminus>_}             = \<^bold>0"
    | "(R \<parallel> S){q\<setminus>p}          = ((R){q\<setminus>p}) \<parallel> ((S){q\<setminus>p})" 
-   | "( x \<leftarrow> y . R){q\<setminus>p}    = ((sn x q p) \<leftarrow> z . ((R {z\<setminus>y}){q\<setminus>p}))" 
+   | "( x \<leftarrow> y . R){q\<setminus>p}    = ((sn x q p) \<leftarrow> (z q p R)  . ((R {(z q p R)\<setminus>y}){q\<setminus>p}))"  
    | "( x\<triangleleft>R\<triangleright>) {q\<setminus>p}         = R"
-   | "(\<acute>x`){q\<setminus>p}            = (\<acute>x`)"
-(*
-  "s x\<leftarrow>y.R q p = (sn x q p)\<leftarrow>z.(s ((s R z y) q p))" 
-*)
+   | "(\<acute>x`){q\<setminus>p}            = (if x =N p then \<acute>q` else \<acute>x`)"
+sorry
+termination
+sorry
+
+value "\<^bold>0{zero\<setminus>zero}"
+value "\<acute>zero` {two\<setminus> zero}"
+value "(\<^bold>0 \<parallel> (\<acute>zero`)) { (newName 2) \<setminus> zero }"
+
+theorem testerrr:
+shows "(\<^bold>0 \<parallel> (\<acute>zero`)) { (newName 2) \<setminus> zero } = (\<^bold>0 \<parallel> (\<acute>(newName 2)`))"
+by (simp add: leastConguence name_equivalence)
+
 end
