@@ -22,7 +22,20 @@ value "\<^bold>0\<parallel>\<^bold>0"
 value "\<acute>zero`"
 value "zero\<triangleleft>\<^bold>0\<triangleright>"
 
-
+abbreviation congru :: "P \<Rightarrow> P \<Rightarrow> bool" (infix "=C" 42)
+  where "congru \<equiv> \<lambda> p q. p = q 
+  \<or> ((p \<parallel> \<^bold>0) = q) 
+  \<or> (\<^bold>0 \<parallel> p  = q)
+  \<or> (p = (q \<parallel> \<^bold>0))
+  \<or> (p = (\<^bold>0 \<parallel> q))
+  \<or> (\<exists> x y. (p = x \<parallel> y) \<and> (q = y \<parallel> x))
+  \<or> (\<exists> x y z. (p = (x \<parallel> y) \<parallel> z) \<and> (q = y \<parallel> (x \<parallel> z)))"
+value "(Null \<parallel> Null) =C Null"
+(*
+quotient_type congr = "P \<Rightarrow> P \<Rightarrow> bool" (infix "=C" 42)
+  where "((P \<parallel> \<^bold>0) =C P)= true"
+  | "((\<^bold>0 \<parallel> P) =C P)= true"
+*)
 consts conguence :: "P \<Rightarrow> P \<Rightarrow> bool" (infix "=C" 42)
 
 abbreviation reflexive
@@ -39,6 +52,8 @@ abbreviation Assoc
   where "Assoc \<equiv> \<forall> p. \<forall> q. \<forall> r. (p \<parallel> q) \<parallel> r =C p \<parallel> (q \<parallel> r)"
 
 axiomatization where leastConguence: "reflexive \<and> transitive \<and> symmetric \<and> Id \<and> Sym \<and> Assoc"
+
+quotient_type congre = "P set" / "leastCongruence" 
 
 theorem test:
   shows "\<forall> p.(p \<parallel> \<^bold>0) =C p"
@@ -95,7 +110,7 @@ by (metis leastConguence)
 
 
 (*Gives the set of free names in a process*)
-primrec free :: "P \<Rightarrow> n set" where
+fun free :: "P \<Rightarrow> n set" where
   "free \<^bold>0 = {}"
   | "free (x \<leftarrow> y . P) = {x} \<union> (free(P) - {y})"
   | "free (x \<triangleleft> P \<triangleright>) = {x} \<union> free P"
@@ -103,7 +118,7 @@ primrec free :: "P \<Rightarrow> n set" where
   | "free (\<acute>x`) = {x}"
 
 (*Gives the set of bound names in a process*)
-primrec bound :: "P \<Rightarrow> n set" where
+fun bound :: "P \<Rightarrow> n set" where
   "bound \<^bold>0 = {}"
   | "bound (x \<leftarrow> y . P) = {y} \<union> bound(P)"
   | "bound (x \<triangleleft> P \<triangleright>) = bound P"
@@ -111,15 +126,14 @@ primrec bound :: "P \<Rightarrow> n set" where
   | "bound (\<acute>x`) = {}"
 
 (*Names occurring in a process*)
-abbreviation names :: "P \<Rightarrow> n set"
-  where "names P \<equiv> free(P) \<union> bound(P)"
-
+fun names :: "P \<Rightarrow> n set"
+  where "names P = free(P) \<union> bound(P)"
 (*quote depth*)
 function n_depth :: "n \<Rightarrow> nat" ("#" 60) 
   and P_depth :: "P \<Rightarrow> nat" ("#" 60)
   where
   "n_depth `P\<acute> = 1 + (P_depth P)"
-  | "P_depth P = (if (free P \<noteq> {}) then Max({ ( n_depth x ) | x. x \<in> (names P)}) else 0)"
+  | "P_depth P = (if (names P \<noteq> {}) then Max({ ( n_depth x ) | x. x \<in> (names P)}) else 0)"
   apply pat_completeness
   apply blast
   apply simp
@@ -129,15 +143,9 @@ termination
 
 value "P_depth (\<acute>zero`)"
 
-function newName :: "nat \<Rightarrow> n"
+fun newName :: "nat \<Rightarrow> n"
   where "newName 0 = `\<^bold>0\<acute>"
        |"newName (Suc n) = `(Output (newName n) (newName n))\<acute>"
-using not0_implies_Suc apply blast
-apply simp
-apply simp
-by blast
-termination
-using "termination" by blast
 
 abbreviation one :: n
   where "one \<equiv> newName 1"
@@ -160,14 +168,12 @@ abbreviation z
   where "z \<equiv> \<lambda> q::n.  \<lambda> p::n. \<lambda> R::P. newName (Max({(n_depth(q)), (P_depth(R)), (n_depth(p)) }))"
   
 
-
 function s :: "P \<Rightarrow> n \<Rightarrow> n \<Rightarrow> P" ("(_) {_\<setminus>_}" 52)
 where "(\<^bold>0){_\<setminus>_}             = \<^bold>0"
    | "(R \<parallel> S){q\<setminus>p}          = ((R){q\<setminus>p}) \<parallel> ((S){q\<setminus>p})" 
    | "( x \<leftarrow> y . R){q\<setminus>p}    = ((sn x q p) \<leftarrow> (z q p R)  . ((R {(z q p R)\<setminus>y}){q\<setminus>p}))"  
    | "( x\<triangleleft>R\<triangleright>) {q\<setminus>p}         = R"
    | "(\<acute>x`){q\<setminus>p}            = (if x =N p then \<acute>q` else \<acute>x`)"
-sledgehammer
 sorry
 termination
 sorry
@@ -180,7 +186,4 @@ theorem testerrr:
 shows "(\<^bold>0 \<parallel> (\<acute>zero`)) { (newName 2) \<setminus> zero } = (\<^bold>0 \<parallel> (\<acute>(newName 2)`))"
 by (simp add: leastConguence name_equivalence)
 
-(*
-  "s x\<leftarrow>y.R q p = (sn x q p)\<leftarrow>z.(s ((s R z y) q p))" 
-*)
 end
