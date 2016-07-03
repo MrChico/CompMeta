@@ -1,5 +1,5 @@
 theory spatial
-imports Main
+imports Main "~~/src/HOL/Library/Multiset"
 begin
 
 (*The mutually recursive datatypes of processes and names*)
@@ -31,24 +31,19 @@ value "\<^bold>0\<parallel>\<^bold>0"
 value "\<acute>zero`"
 value "zero\<triangleleft>\<^bold>0\<triangleright>"
 
-function getSet :: "P \<Rightarrow> P set" ("•" 56)
+fun getSet :: "P \<Rightarrow> P multiset" ("•" 56)
 where
-  "getSet \<^bold>0 = {}"
- |"getSet (a\<parallel>b) = (getSet a)\<union>(getSet b)"
- |"getSet a = {a}"
-sorry
-termination
-sorry
+  "getSet \<^bold>0 = {#}"
+ |"getSet (a\<parallel>b) = (getSet a)+(getSet b)"
+ |"getSet a = {#a#}"
+
   
-function congru :: "P \<Rightarrow> P \<Rightarrow> bool" (infixl "=C" 42)
+fun congru :: "P \<Rightarrow> P \<Rightarrow> bool" (infixl "=C" 42)
 where
    "congru (a\<parallel>b) (c\<parallel>d) = ((getSet (a\<parallel>b)) = (getSet (c\<parallel>d)))"
   |"congru (a\<parallel>b) c     = ((a =C \<^bold>0 \<and> b =C c) \<or> (b = \<^bold>0 \<and> a =C c))" 
   |"congru  a    (b\<parallel>c) = (( b =C \<^bold>0 \<and> a =C c) \<or> (c =C \<^bold>0 \<and> a =C c))"
   |"congru a b         = (a = b)"
-sorry
-termination
-sorry
 
 
 
