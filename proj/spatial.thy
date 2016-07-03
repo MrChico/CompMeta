@@ -16,6 +16,7 @@ abbreviation Output :: "n \<Rightarrow> n \<Rightarrow> P" ("_[_]")
 abbreviation zero :: n
   where "zero \<equiv> `\<^bold>0\<acute>"
 
+
 value "zero \<leftarrow> zero.\<^bold>0"
 value "\<^bold>0\<parallel>\<^bold>0"
 value "\<acute>zero`"
@@ -97,7 +98,7 @@ value "P_depth (\<acute>zero`)"
 
 function newName :: "nat \<Rightarrow> n"
   where "newName 0 = `\<^bold>0\<acute>"
-       |"newName (Suc n) = `(sugger (newName n) (newName n))\<acute>"
+       |"newName (Suc n) = `(Output (newName n) (newName n))\<acute>"
 using not0_implies_Suc apply blast
 apply simp
 apply simp
@@ -105,20 +106,46 @@ by blast
 termination
 using "termination" by blast
 
-value "newName 3"
+abbreviation one :: n
+  where "one \<equiv> newName 1"
+abbreviation two :: n
+  where "two \<equiv> newName 2"
+abbreviation three :: n
+  where "three \<equiv> newName 3"
+
 
 (*substitution*)
 (*Takes a process, specifies the names to be substituted and returns a process*)
 abbreviation sn :: "n \<Rightarrow> n \<Rightarrow> n \<Rightarrow> n" where
   "sn x q p \<equiv> (if (x =N p) then q else x)" 
 
+value "(sn zero zero zero)"
+value "newName (Max ({(n_depth zero), 0::nat}))"
+
+(*with z = (newName (P_depth(R)))*)
+abbreviation z
+  where "z \<equiv> \<lambda> q::n.  \<lambda> p::n. \<lambda> R::P. newName (Max({(n_depth(q)), (P_depth(R)), (n_depth(p)) }))"
   
-primrec s :: "P \<Rightarrow> n \<Rightarrow> n \<Rightarrow> P" ("(_) {_\<setminus>_}" 52)
+
+
+function s :: "P \<Rightarrow> n \<Rightarrow> n \<Rightarrow> P" ("(_) {_\<setminus>_}" 52)
 where "(\<^bold>0){_\<setminus>_}             = \<^bold>0"
    | "(R \<parallel> S){q\<setminus>p}          = ((R){q\<setminus>p}) \<parallel> ((S){q\<setminus>p})" 
-   | "( x \<leftarrow> y . R){q\<setminus>p}    = ((sn x q p) \<leftarrow> (z)  . ((R {z\<setminus>y}){q\<setminus>p}))" (*with z = (newName (P_depth(R)))*) 
+   | "( x \<leftarrow> y . R){q\<setminus>p}    = ((sn x q p) \<leftarrow> (z q p R)  . ((R {(z q p R)\<setminus>y}){q\<setminus>p}))"  
    | "( x\<triangleleft>R\<triangleright>) {q\<setminus>p}         = R"
-   | "(\<acute>x`){q\<setminus>p}            = (\<acute>x`)"
+   | "(\<acute>x`){q\<setminus>p}            = (if x =N p then \<acute>q` else \<acute>x`)"
+sorry
+termination
+sorry
+
+value "\<^bold>0{zero\<setminus>zero}"
+value "\<acute>zero` {two\<setminus> zero}"
+value "(\<^bold>0 \<parallel> (\<acute>zero`)) { (newName 2) \<setminus> zero }"
+
+theorem testerrr:
+shows "(\<^bold>0 \<parallel> (\<acute>zero`)) { (newName 2) \<setminus> zero } = (\<^bold>0 \<parallel> (\<acute>(newName 2)`))"
+by (simp add: leastConguence name_equivalence)
+
 (*
   "s x\<leftarrow>y.R q p = (sn x q p)\<leftarrow>z.(s ((s R z y) q p))" 
 *)
