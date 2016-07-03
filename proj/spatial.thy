@@ -43,23 +43,56 @@ axiomatization where leastConguence: "reflexive \<and> transitive \<and> symmetr
 theorem test:
   shows "\<forall> p.(p \<parallel> \<^bold>0) =C p"
 using leastConguence by blast
-
+(*
 theorem testtie:
   shows "p \<parallel> (\<^bold>0 \<parallel> q) =C q \<parallel> p"  
 by (metis leastConguence)
+*)
+abbreviation nEq :: "n \<Rightarrow> n \<Rightarrow> bool" (infix "=N" 42)
+  where "nEq \<equiv> \<lambda> x y . `\<acute>y`\<acute> = x \<or> `\<acute>x`\<acute> = y \<or> (\<exists> z1::P . \<exists> z2::P. `z1\<acute> = x \<and> `z2\<acute> = y \<and> z1 =C z2)"
 
 (*Name equivalence*)
+(*
 consts nameEq :: "n \<Rightarrow> n \<Rightarrow> bool" (infix "=N" 42)
 abbreviation QuoteDrop
   where "QuoteDrop \<equiv> \<forall>x. `\<acute>x`\<acute> =N x"
 abbreviation StructEquiv
   where "StructEquiv \<equiv> \<forall>p q. p =C q \<longrightarrow> `p\<acute> =N `q\<acute>"
+abbreviation reflexiveN
+  where "reflexiveN \<equiv> \<forall> r. r =N r"
+abbreviation transitiveN
+  where "transitiveN \<equiv> \<forall> x. \<forall> y. \<forall> z. x =N y \<and> y =N z \<longrightarrow> x =N z"
+abbreviation symmetricN
+  where "symmetricN \<equiv> \<forall> x. \<forall> y. x =N y \<longrightarrow> y =N x"
 
-axiomatization where name_equivalence: "QuoteDrop \<and> StructEquiv"
+axiomatization where name_equivalence: "QuoteDrop \<and> StructEquiv \<and> reflexiveN \<and> transitiveN \<and> symmetricN"
+*)
+
+abbreviation reflexiveR
+  where "reflexiveR \<equiv> \<lambda> R. \<forall> r. R r r"
+abbreviation transitiveR
+  where "transitiveR \<equiv> \<lambda> R. \<forall> x. \<forall> y. \<forall> z. R x y \<and> R y z \<longrightarrow> R x z"
+abbreviation symmetricR
+  where "symmetricR \<equiv> \<lambda> R. \<forall> x. \<forall> y. R x y \<longrightarrow> R y x"
+
+theorem name_congruence_reflexive:
+  shows "reflexiveR nEq"
+by (metis leastConguence n.exhaust)
+
+theorem name_congruence_symmetric:
+  shows "symmetricR nEq"
+using leastConguence by blast
+
+theorem name_congruence_transitive:
+  shows "transitiveR nEq"
+
+
+value "`p \<parallel> (\<^bold>0 \<parallel> q)\<acute> =N `q \<parallel> p\<acute>"
 
 theorem testerr:
-shows "`p \<parallel> (\<^bold>0 \<parallel> q)\<acute> =N `q \<parallel> p\<acute>"
-by (meson leastConguence name_equivalence)
+  shows "`p \<parallel> (\<^bold>0 \<parallel> q)\<acute> =N `q \<parallel> p\<acute>"
+by (metis leastConguence)
+
 
 (*Gives the set of free names in a process*)
 primrec free :: "P \<Rightarrow> n set" where
@@ -134,6 +167,7 @@ where "(\<^bold>0){_\<setminus>_}             = \<^bold>0"
    | "( x \<leftarrow> y . R){q\<setminus>p}    = ((sn x q p) \<leftarrow> (z q p R)  . ((R {(z q p R)\<setminus>y}){q\<setminus>p}))"  
    | "( x\<triangleleft>R\<triangleright>) {q\<setminus>p}         = R"
    | "(\<acute>x`){q\<setminus>p}            = (if x =N p then \<acute>q` else \<acute>x`)"
+sledgehammer
 sorry
 termination
 sorry
