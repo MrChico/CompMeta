@@ -18,42 +18,48 @@ abbreviation zero :: n
   where "zero \<equiv> `\<^bold>0\<acute>"
 
 
+abbreviation reflexiveR
+  where "reflexiveR \<equiv> \<lambda> R. \<forall> r. R r r"
+abbreviation transitiveR
+  where "transitiveR \<equiv> \<lambda> R. \<forall> x. \<forall> y. \<forall> z. R x y \<and> R y z \<longrightarrow> R x z"
+abbreviation symmetricR
+  where "symmetricR \<equiv> \<lambda> R. \<forall> x. \<forall> y. R x y \<longrightarrow> R y x"
+
+
 value "zero \<leftarrow> zero.\<^bold>0"
 value "\<^bold>0\<parallel>\<^bold>0"
 value "\<acute>zero`"
 value "zero\<triangleleft>\<^bold>0\<triangleright>"
 
-(*
-abbreviation congru :: "P \<Rightarrow> P \<Rightarrow> bool" (infix "=C" 42)
-  where "congru \<equiv> \<lambda> p::P. \<lambda> q::P. p = q 
-  \<or> ((p \<parallel> \<^bold>0) = q) 
-  \<or> (\<^bold>0 \<parallel> p  = q)
-  \<or> (p = (q \<parallel> \<^bold>0))
-  \<or> (p = (\<^bold>0 \<parallel> q))
-  \<or> (\<exists> x::P. \<exists> y::P. (p = (x \<parallel> y)) \<and> (q = (y \<parallel> x)))"
-  \<or> (\<exists> x y z. (p = (x \<parallel> y) \<parallel> z) \<and> (q = y \<parallel> (x \<parallel> z)))" *)
-
-function congru :: "P \<Rightarrow> P \<Rightarrow> bool" (infix "=C" 42)
-  where "((a \<parallel> Null) =C b) = (a = b)"
-  | "((Null \<parallel> a) =C b) = (a = b)"
-  | "(a =C (Null \<parallel> b)) = (a = b)"
-  | "(a =C (b \<parallel> Null)) = (a = b)"
-  | "(((a \<parallel> b) \<parallel> c) =C (aa \<parallel> (bb \<parallel> cc))) = ((a = aa)\<and> (b = bb) \<and> (c = cc))"
-  | "((a \<parallel> b) =C (bb \<parallel> aa)) = ((a = aa)\<and>(b = bb))"
-  | "(a =C b) = (a = b)"
+function getSet :: "P \<Rightarrow> P set" ("•" 56)
+where
+  "getSet \<^bold>0 = {}"
+ |"getSet (a\<parallel>b) = (getSet a)\<union>(getSet b)"
+ |"getSet a = {a}"
+sorry
+termination
+sorry
+  
+function congru :: "P \<Rightarrow> P \<Rightarrow> bool" (infixl "=C" 42)
+where
+   "congru (a\<parallel>b) (c\<parallel>d) = ((getSet (a\<parallel>b)) = (getSet (c\<parallel>d)))"
+  |"congru (a\<parallel>b) c     = ((a =C \<^bold>0 \<and> b =C c) \<or> (b = \<^bold>0 \<and> a =C c))" 
+  |"congru  a    (b\<parallel>c) = (( b =C \<^bold>0 \<and> a =C c) \<or> (c =C \<^bold>0 \<and> a =C c))"
+  |"congru a b         = (a = b)"
 sorry
 termination
 sorry
 
 
 
-value "(Null \<parallel> Null) =C Null"
+
+
+
+theorem schowfalse:
+  shows "False"
+sledgehammer
 
 (*
-quotient_type congr = "P \<Rightarrow> P \<Rightarrow> bool" (infix "=C" 42)
-  where "((P \<parallel> \<^bold>0) =C P)= true"
-  | "((\<^bold>0 \<parallel> P) =C P)= true"
-
 consts conguence :: "P \<Rightarrow> P \<Rightarrow> bool" (infix "=C" 42)
 
 abbreviation reflexive
@@ -71,12 +77,46 @@ abbreviation Assoc
 
 axiomatization where leastConguence: "reflexive \<and> transitive \<and> symmetric \<and> Id \<and> Sym \<and> Assoc"
 
-quotient_type congre = "P set" / "leastCongruence" 
 *)
+
+
+value "Null = Null"
+
+
+theorem congruTransitive:
+  shows "transitiveR congru"
+sledgehammer
+by simp
+
+theorem congruReflexive:
+  shows "reflexiveR congru"
+by simp
+
+theorem congruSymmetric:
+  shows "symmetricR congru"
+by simp
+
+theorem someshit:
+shows "(((zero\<leftarrow>zero.\<^bold>0) \<parallel> \<^bold>0) \<parallel> (zero\<leftarrow>zero.\<^bold>0)) =C (((zero\<leftarrow>zero.\<^bold>0) \<parallel> (zero\<leftarrow>zero.\<^bold>0)) \<parallel> \<^bold>0)"
+using leastConguence by blast
+
+
+value "((a \<parallel> b) \<parallel> c) =C (a \<parallel> (b \<parallel> c))"
+value "(a \<parallel> (b \<parallel> c)) =C ((a \<parallel> b) \<parallel> c)"
+value "(((zero\<leftarrow>zero.\<^bold>0) \<parallel> \<^bold>0) \<parallel> (zero\<leftarrow>zero.\<^bold>0)) =C (((zero\<leftarrow>zero.\<^bold>0) \<parallel> (zero\<leftarrow>zero.\<^bold>0)) \<parallel> \<^bold>0)"
+value "(((zero\<leftarrow>zero.\<^bold>0) \<parallel> \<^bold>0) \<parallel> (zero\<leftarrow>zero.\<^bold>0)) =C (((zero\<leftarrow>zero.\<^bold>0) \<parallel> \<^bold>0) \<parallel> (zero\<leftarrow>zero.\<^bold>0))"
+value "((\<^bold>0 \<parallel> p) \<parallel> \<^bold>0) =C p"
+
+(*
+normalization "(Null \<parallel> Null) =C Null"
+value[nbe] "(Null\<parallel> Null) =C (Null \<parallel> Null)"
+
+*)
+
 
 theorem test:
   shows "\<forall> p.(p \<parallel> \<^bold>0) =C p"
-using congru.simps(1) by auto
+using leastConguence by blast
 
 (*
 theorem testtie:
@@ -103,13 +143,7 @@ abbreviation symmetricN
 axiomatization where name_equivalence: "QuoteDrop \<and> StructEquiv \<and> reflexiveN \<and> transitiveN \<and> symmetricN"
 *)
 
-abbreviation reflexiveR
-  where "reflexiveR \<equiv> \<lambda> R. \<forall> r. R r r"
-abbreviation transitiveR
-  where "transitiveR \<equiv> \<lambda> R. \<forall> x. \<forall> y. \<forall> z. R x y \<and> R y z \<longrightarrow> R x z"
-abbreviation symmetricR
-  where "symmetricR \<equiv> \<lambda> R. \<forall> x. \<forall> y. R x y \<longrightarrow> R y x"
-
+(*
 theorem name_congruence_reflexive:
   shows "reflexiveR nEq"
 by (metis leastConguence n.exhaust)
@@ -120,7 +154,7 @@ using leastConguence by blast
 
 theorem name_congruence_transitive:
   shows "transitiveR nEq"
-
+*)
 
 value "`p \<parallel> (\<^bold>0 \<parallel> q)\<acute> =N `q \<parallel> p\<acute>"
 
@@ -167,13 +201,16 @@ fun newName :: "nat \<Rightarrow> n"
   where "newName 0 = `\<^bold>0\<acute>"
        |"newName (Suc n) = `(Output (newName n) (newName n))\<acute>"
 
-abbreviation one :: n
-  where "one \<equiv> newName 1"
-abbreviation two :: n
-  where "two \<equiv> newName 2"
-abbreviation three :: n
-  where "three \<equiv> newName 3"
+abbreviation one :: P
+  where "one \<equiv> \<acute>newName 1`"
+abbreviation two :: P
+  where "two \<equiv> \<acute>newName 2`"
+abbreviation three :: P
+  where "three \<equiv> \<acute>newName 3`"
+abbreviation fore :: P
+  where "fore \<equiv> \<acute>newName 4`"
 
+value "((one\<parallel>two)\<parallel>(three\<parallel>fore)) =C ((one\<parallel>three)\<parallel>(two\<parallel>fore))"
 
 (*substitution*)
 (*Takes a process, specifies the names to be substituted and returns a process*)
