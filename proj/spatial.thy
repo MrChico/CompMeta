@@ -61,7 +61,7 @@ shows "`p \<parallel> (\<^bold>0 \<parallel> q)\<acute> =N `q \<parallel> p\<acu
 by (meson leastConguence name_equivalence)
 
 (*Gives the set of free names in a process*)
-primrec free :: "P \<Rightarrow> n set" where
+fun free :: "P \<Rightarrow> n set" where
   "free \<^bold>0 = {}"
   | "free (x \<leftarrow> y . P) = {x} \<union> (free(P) - {y})"
   | "free (x \<triangleleft> P \<triangleright>) = {x} \<union> free P"
@@ -69,7 +69,7 @@ primrec free :: "P \<Rightarrow> n set" where
   | "free (\<acute>x`) = {x}"
 
 (*Gives the set of bound names in a process*)
-primrec bound :: "P \<Rightarrow> n set" where
+fun bound :: "P \<Rightarrow> n set" where
   "bound \<^bold>0 = {}"
   | "bound (x \<leftarrow> y . P) = {y} \<union> bound(P)"
   | "bound (x \<triangleleft> P \<triangleright>) = bound P"
@@ -77,33 +77,51 @@ primrec bound :: "P \<Rightarrow> n set" where
   | "bound (\<acute>x`) = {}"
 
 (*Names occurring in a process*)
-abbreviation names :: "P \<Rightarrow> n set"
-  where "names P \<equiv> free(P) \<union> bound(P)"
-
+fun names :: "P \<Rightarrow> n set"
+  where "names P = free(P) \<union> bound(P)"
 (*quote depth*)
 function n_depth :: "n \<Rightarrow> nat" ("#" 60) 
   and P_depth :: "P \<Rightarrow> nat" ("#" 60)
   where
   "n_depth `P\<acute> = 1 + (P_depth P)"
-  | "P_depth P = (if (free P \<noteq> {}) then Max({ ( n_depth x ) | x. x \<in> (names P)}) else 0)"
+  | "P_depth P = (if (names P \<noteq> {}) then Max({ ( n_depth x ) | x. x \<in> (names P)}) else 0)"
   apply pat_completeness
   apply blast
   apply simp
   by blast
 termination
+  (*apply lexicographic_order*)
+  sorry
+  (*
+  apply (relation "measure (\<lambda>x. 2)")
+  apply simp
+  apply (induct _ rule: n.induct)
+  by (simp add: name_equivalence)
+
+  apply simp
+  apply simp
+  apply simp
+  apply 
+  apply simp
+  apply simp
+  apply simp
+  apply simp
+  apply simp
+  sledgehammer
+  sledgehammer
   sorry  (*Even without termination proof, we can use the n_depth/P_depth function*)
-
-
+*)
 (*---Substitution---*)
 (*Takes a process, specifies the names to be substituted and returns a process*)
 abbreviation sn :: "n \<Rightarrow> n \<Rightarrow> n \<Rightarrow> n" where
   "sn x q p \<equiv> (if (x =N p) then q else x)" 
 
-  
-primrec s :: "P \<Rightarrow> n \<Rightarrow> n \<Rightarrow> P" ("(_) {_\<setminus>_}" 52)
+
+
+function s :: "P \<Rightarrow> n \<Rightarrow> n \<Rightarrow> P" ("(_) {_\<setminus>_}" 52)
 where "(\<^bold>0){_\<setminus>_}             = \<^bold>0"
    | "(R \<parallel> S){q\<setminus>p}          = ((R){q\<setminus>p}) \<parallel> ((S){q\<setminus>p})" 
-   | "( x \<leftarrow> y . R){q\<setminus>p}    = (sn x q p) \<leftarrow> z . ((R {z\<setminus>y}){q\<setminus>p})" 
+   | "( x \<leftarrow> y . R){q\<setminus>p}    = ((sn x q p) \<leftarrow> z . ((R {z\<setminus>y}){q\<setminus>p}))" 
    | "( x\<triangleleft>R\<triangleright>) {q\<setminus>p}         = R"
    | "(\<acute>x`){q\<setminus>p}            = (\<acute>x`)"
 (*
