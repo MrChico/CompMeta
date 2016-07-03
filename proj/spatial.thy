@@ -21,7 +21,20 @@ value "\<^bold>0\<parallel>\<^bold>0"
 value "\<acute>zero`"
 value "zero\<triangleleft>\<^bold>0\<triangleright>"
 
-
+abbreviation congru :: "P \<Rightarrow> P \<Rightarrow> bool" (infix "=C" 42)
+  where "congru \<equiv> \<lambda> p q. p = q 
+  \<or> ((p \<parallel> \<^bold>0) = q) 
+  \<or> (\<^bold>0 \<parallel> p  = q)
+  \<or> (p = (q \<parallel> \<^bold>0))
+  \<or> (p = (\<^bold>0 \<parallel> q))
+  \<or> (\<exists> x y. (p = x \<parallel> y) \<and> (q = y \<parallel> x))
+  \<or> (\<exists> x y z. (p = (x \<parallel> y) \<parallel> z) \<and> (q = y \<parallel> (x \<parallel> z)))"
+value "(Null \<parallel> Null) =C Null"
+(*
+quotient_type congr = "P \<Rightarrow> P \<Rightarrow> bool" (infix "=C" 42)
+  where "((P \<parallel> \<^bold>0) =C P)= true"
+  | "((\<^bold>0 \<parallel> P) =C P)= true"
+*)
 consts conguence :: "P \<Rightarrow> P \<Rightarrow> bool" (infix "=C" 42)
 
 abbreviation reflexive
@@ -39,6 +52,8 @@ abbreviation Assoc
 
 axiomatization where leastConguence: "reflexive \<and> transitive \<and> symmetric \<and> Id \<and> Sym \<and> Assoc"
 
+quotient_type congre = "P set" / "leastCongruence" 
+
 theorem test:
   shows "\<forall> p.(p \<parallel> \<^bold>0) =C p"
 using leastConguence by blast
@@ -48,7 +63,9 @@ theorem testtie:
 by (metis leastConguence)
 
 (*Name equivalence*)
-consts nameEq :: "n \<Rightarrow> n \<Rightarrow> bool" (infix "=N" 42)
+fun nameEq :: "n \<Rightarrow> n \<Rightarrow> bool" (infix "=N" 42)
+  where "nameEq `\<acute>x`\<acute> x = (x = x)"
+  | "nameEq `P\<acute> `Q\<acute>= (P =C Q)" 
 abbreviation QuoteDrop
   where "QuoteDrop \<equiv> \<forall>x. `\<acute>x`\<acute> =N x"
 abbreviation StructEquiv
@@ -115,8 +132,6 @@ termination
 (*Takes a process, specifies the names to be substituted and returns a process*)
 abbreviation sn :: "n \<Rightarrow> n \<Rightarrow> n \<Rightarrow> n" where
   "sn x q p \<equiv> (if (x =N p) then q else x)" 
-
-
 
 function s :: "P \<Rightarrow> n \<Rightarrow> n \<Rightarrow> P" ("(_) {_\<setminus>_}" 52)
 where "(\<^bold>0){_\<setminus>_}             = \<^bold>0"
