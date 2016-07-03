@@ -22,20 +22,37 @@ value "\<^bold>0\<parallel>\<^bold>0"
 value "\<acute>zero`"
 value "zero\<triangleleft>\<^bold>0\<triangleright>"
 
+(*
 abbreviation congru :: "P \<Rightarrow> P \<Rightarrow> bool" (infix "=C" 42)
-  where "congru \<equiv> \<lambda> p q. p = q 
+  where "congru \<equiv> \<lambda> p::P. \<lambda> q::P. p = q 
   \<or> ((p \<parallel> \<^bold>0) = q) 
   \<or> (\<^bold>0 \<parallel> p  = q)
   \<or> (p = (q \<parallel> \<^bold>0))
   \<or> (p = (\<^bold>0 \<parallel> q))
-  \<or> (\<exists> x y. (p = x \<parallel> y) \<and> (q = y \<parallel> x))
-  \<or> (\<exists> x y z. (p = (x \<parallel> y) \<parallel> z) \<and> (q = y \<parallel> (x \<parallel> z)))"
+  \<or> (\<exists> x::P. \<exists> y::P. (p = (x \<parallel> y)) \<and> (q = (y \<parallel> x)))"
+  \<or> (\<exists> x y z. (p = (x \<parallel> y) \<parallel> z) \<and> (q = y \<parallel> (x \<parallel> z)))" *)
+
+function congru :: "P \<Rightarrow> P \<Rightarrow> bool" (infix "=C" 42)
+  where "((a \<parallel> Null) =C b) = (a = b)"
+  | "((Null \<parallel> a) =C b) = (a = b)"
+  | "(a =C (Null \<parallel> b)) = (a = b)"
+  | "(a =C (b \<parallel> Null)) = (a = b)"
+  | "(((a \<parallel> b) \<parallel> c) =C (aa \<parallel> (bb \<parallel> cc))) = ((a = aa)\<and> (b = bb) \<and> (c = cc))"
+  | "((a \<parallel> b) =C (bb \<parallel> aa)) = ((a = aa)\<and>(b = bb))"
+  | "(a =C b) = (a = b)"
+sorry
+termination
+sorry
+
+
+
 value "(Null \<parallel> Null) =C Null"
+
 (*
 quotient_type congr = "P \<Rightarrow> P \<Rightarrow> bool" (infix "=C" 42)
   where "((P \<parallel> \<^bold>0) =C P)= true"
   | "((\<^bold>0 \<parallel> P) =C P)= true"
-*)
+
 consts conguence :: "P \<Rightarrow> P \<Rightarrow> bool" (infix "=C" 42)
 
 abbreviation reflexive
@@ -54,10 +71,12 @@ abbreviation Assoc
 axiomatization where leastConguence: "reflexive \<and> transitive \<and> symmetric \<and> Id \<and> Sym \<and> Assoc"
 
 quotient_type congre = "P set" / "leastCongruence" 
+*)
 
 theorem test:
   shows "\<forall> p.(p \<parallel> \<^bold>0) =C p"
-using leastConguence by blast
+using congru.simps(1) by auto
+
 (*
 theorem testtie:
   shows "p \<parallel> (\<^bold>0 \<parallel> q) =C q \<parallel> p"  
