@@ -10,6 +10,7 @@ datatype P = Null             ("\<^bold>0")
            | par P P          (infixl "\<parallel>" 53)    
      and n = quote P          ("`_\<acute>")
 
+(*Syntactic sugar for output on a channel*)
 abbreviation Output :: "n \<Rightarrow> n \<Rightarrow> P" ("_[_]")
   where "Output x y \<equiv> x\<triangleleft>\<acute>y`\<triangleright>"
 
