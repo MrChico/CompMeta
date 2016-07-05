@@ -1,6 +1,14 @@
 theory spatial
-imports Main "~~/src/HOL/Library/Multiset"
+imports Main
 begin
+
+abbreviation reflexive
+  where "reflexive \<equiv> \<lambda> R. \<forall> r. R r r"
+abbreviation transitive
+  where "transitive \<equiv> \<lambda> R. \<forall> x. \<forall> y. \<forall> z. R x y \<and> R y z \<longrightarrow> R x z"
+abbreviation symmetric
+  where "symmetric \<equiv> \<lambda> R. \<forall> x. \<forall> y. R x y \<longrightarrow> R y x"
+
 
 (*The mutually recursive datatypes of processes and names*)
 datatype P = Null             ("\<^bold>0")
@@ -21,82 +29,115 @@ abbreviation zero :: n
   where "zero \<equiv> `\<^bold>0\<acute>"
 
 
-abbreviation reflexiveR
-  where "reflexiveR \<equiv> \<lambda> R. \<forall> r. R r r"
-abbreviation transitiveR
-  where "transitiveR \<equiv> \<lambda> R. \<forall> x. \<forall> y. \<forall> z. R x y \<and> R y z \<longrightarrow> R x z"
-abbreviation symmetricR
-  where "symmetricR \<equiv> \<lambda> R. \<forall> x. \<forall> y. R x y \<longrightarrow> R y x"
-
-
 value "zero \<leftarrow> zero.\<^bold>0"
 value "\<^bold>0\<parallel>\<^bold>0"
 value "\<acute>zero`"
 value "zero\<triangleleft>\<^bold>0\<triangleright>"
+value "(c\<leftarrow>d.(e))"
 
-fun getSet :: "P \<Rightarrow> P multiset" ("•" 56)
+fun getList :: "P \<Rightarrow> P list"
 where
-  "getSet \<^bold>0 = {#}"
- |"getSet (a\<parallel>b) = (getSet a)+(getSet b)"
- |"getSet a = {#a#}"
+  "getList \<^bold>0 = []"
+ |"getList (a\<parallel>b) = ((getList a)@(getList b))"
+ |"getList a = [a]"
 
-  
-fun congru :: "P \<Rightarrow> P \<Rightarrow> bool" (infixl "=C" 42)
+
+
+
+function congru :: "P \<Rightarrow> P \<Rightarrow> bool" (infixl "=C" 42)
+     and eq :: "P list \<Rightarrow> P list \<Rightarrow> bool"
+     and lminus :: "P \<Rightarrow> P list \<Rightarrow> P list"
+     and inC :: "P \<Rightarrow> P list \<Rightarrow> bool"
 where
-   "congru (a\<parallel>b) (c\<parallel>d) = ((getSet (a\<parallel>b)) = (getSet (c\<parallel>d)))"
-  |"congru (a\<parallel>b) c     = ((a =C \<^bold>0 \<and> b =C c) \<or> (b = \<^bold>0 \<and> a =C c))" 
-  |"congru  a    (b\<parallel>c) = (( b =C \<^bold>0 \<and> a =C c) \<or> (c =C \<^bold>0 \<and> a =C c))"
-  |"congru a b         = (a = b)"
+   "congru (a\<parallel>b) (c\<parallel>d)       = (eq (getList (a\<parallel>b)) (getList (c\<parallel>d)))"
+  |"congru (x\<leftarrow>y.(a)) (xx\<leftarrow>yy.(b)) = ((a =C b) \<and> (x=xx) \<and> (y = yy))"
+  |"congru (x\<triangleleft>a\<triangleright>) (y\<triangleleft>b\<triangleright>)     = ((a =C b) \<and> (x = y))"
+  |"congru (\<acute>a`) (\<acute>b`)       = (a = b)"
+  |"congru Null Null         = True"
+  |"congru (a\<parallel>b) Null        = ((a =C Null)\<and>(b =C Null))"
+  |"congru Null (a\<parallel>b)        = ((a =C Null)\<and>(b =C Null))"
+  |"congru (a\<parallel>b) (c\<leftarrow>d.(e))  = (eq (getList (a\<parallel>b)) ((c\<leftarrow>d.(e))#[]))"
+  |"congru (c\<leftarrow>d.(e)) (a\<parallel>b)  = (eq (getList (a\<parallel>b)) ((c\<leftarrow>d.(e))#[]))"
+  |"congru (a\<parallel>b) (c\<triangleleft>d\<triangleright>)      = (eq (getList (a\<parallel>b)) ((c\<triangleleft>d\<triangleright>)#[]))"
+  |"congru (c\<triangleleft>d\<triangleright>) (a\<parallel>b)      = (eq (getList (a\<parallel>b)) ((c\<triangleleft>d\<triangleright>)#[]))"
+  |"congru (a\<parallel>b) (\<acute>c`)       = (eq (getList (a\<parallel>b)) ((\<acute>c`)#[]))"
+  |"congru (\<acute>c`) (a\<parallel>b)       = (eq (getList (a\<parallel>b)) ((\<acute>c`)#[]))"
 
 
+  (* for f*cks sake, why cant I have some statement for remaining cases? *)
+  |"congru (\<acute>a`) Null        = False"
+  |"congru Null (\<acute>b`)        = False"
+  |"congru (\<acute>a`) (_\<leftarrow>_._)    = False"
+  |"congru (_\<leftarrow>_._) (\<acute>b`)    = False"
+  |"congru (\<acute>a`) (_\<triangleleft>_\<triangleright>)      = False"
+  |"congru (_\<triangleleft>_\<triangleright>) (\<acute>b`)      = False"
+  |"congru (_\<triangleleft>_\<triangleright>) Null       = False"
+  |"congru Null (_\<triangleleft>_\<triangleright>)       = False"
+  |"congru (_\<triangleleft>_\<triangleright>) (_\<leftarrow>_._)   = False"
+  |"congru (_\<leftarrow>_._) (_\<triangleleft>_\<triangleright>)   = False"
+  |"congru (_\<leftarrow>_._) Null     = False"
+  |"congru Null (_\<leftarrow>_._)     = False"
 
+  (* eq checks wether two lists have the same ammount of structural congruent objects *)
+  |"eq [] []   = True"
+  |"eq [] (x#xs) = eq (x#xs) []"
+  |"eq (x#xs) bs = (if (inC x bs) then (eq xs (lminus x bs)) else False)"
 
-consts conguence :: "P \<Rightarrow> P \<Rightarrow> bool" (infix "=C" 42)
+  (*inC a b checks wether a is in b*)
+  |"inC a [] = (a =C Null)"
+  |"inC a (x#xs) = ((a =C x) \<or> (inC a xs))"
 
-abbreviation reflexive
-  where "reflexive \<equiv> \<forall> r. r =C r"
-abbreviation transitive
-  where "transitive \<equiv> \<forall> x. \<forall> y. \<forall> z. x =C y \<and> y =C z \<longrightarrow> x =C z"
-abbreviation symmetric
-  where "symmetric \<equiv> \<forall> x. \<forall> y. x =C y \<longrightarrow> y =C x"
-abbreviation Id 
-  where "Id \<equiv> \<forall> p. (\<^bold>0 \<parallel> p) =C p"
-abbreviation Sym
-  where "Sym \<equiv> \<forall> p. \<forall> q. p \<parallel> q =C q \<parallel> p"
-abbreviation Assoc
-  where "Assoc \<equiv> \<forall> p. \<forall> q. \<forall> r. (p \<parallel> q) \<parallel> r =C p \<parallel> (q \<parallel> r)"
+  (* lminus a b removes first element from b which is structural congruent to a*)
+  |"lminus a [] = []"
+  |"lminus a (x#xs) = (if (a =C x) then xs else (x#(lminus a xs)))"
+sorry
+termination
+sorry
 
-axiomatization where leastConguence: "reflexive \<and> transitive \<and> symmetric \<and> Id \<and> Sym \<and> Assoc"
-
-*)
-
-
-value "Null = Null"
-
+value "(( \<^bold>0 \<parallel> (n\<^sub>1\<triangleleft>\<^bold>0 \<parallel> \<^bold>0\<triangleright>)) =C (n\<^sub>1\<triangleleft>\<^bold>0\<triangleright>))"
 
 theorem congruTransitive:
-  shows "transitiveR congru"
-sledgehammer
-by simp
+  shows "transitive congru"
+sorry
 
 theorem congruReflexive:
-  shows "reflexiveR congru"
-by simp
+  shows "reflexive congru"
+sorry
 
 theorem congruSymmetric:
-  shows "symmetricR congru"
-by simp
+  shows "symmetric congru"
+sorry
+
+theorem parAssoc:
+  shows "((a\<parallel>b)\<parallel>c) =C (a\<parallel>(b\<parallel>c))"
+sorry
+
+lemma eq_congruence: "eq a a"
+sorry
+
+theorem zeroLeft:
+  shows "(Null \<parallel> a) =C a"
+(*
+by (smt congru.simps(1) congru.simps(10) congru.simps(13) congru.simps(5) congru.simps(6) congru.simps(9) congruReflexive congruSymmetric getList.elims getList.simps(1) getList.simps(2) self_append_conv2)
+*)
+sorry
+
+theorem zeroRight:
+  shows "(a \<parallel> Null) =C a"
+
+(*
+by (smt append_self_conv congru.simps(1) congru.simps(10) congru.simps(13) congru.simps(5) congru.simps(6) congru.simps(9) congruReflexive congruSymmetric getList.elims getList.simps(1) getList.simps(2))
+*)
+sorry
 
 theorem someshit:
 shows "(((zero\<leftarrow>zero.\<^bold>0) \<parallel> \<^bold>0) \<parallel> (zero\<leftarrow>zero.\<^bold>0)) =C (((zero\<leftarrow>zero.\<^bold>0) \<parallel> (zero\<leftarrow>zero.\<^bold>0)) \<parallel> \<^bold>0)"
-using leastConguence by blast
+by simp
 
-
-value "((a \<parallel> b) \<parallel> c) =C (a \<parallel> (b \<parallel> c))"
-value "(a \<parallel> (b \<parallel> c)) =C ((a \<parallel> b) \<parallel> c)"
+value "getList ((a \<parallel> b) \<parallel> c)"
 value "(((zero\<leftarrow>zero.\<^bold>0) \<parallel> \<^bold>0) \<parallel> (zero\<leftarrow>zero.\<^bold>0)) =C (((zero\<leftarrow>zero.\<^bold>0) \<parallel> (zero\<leftarrow>zero.\<^bold>0)) \<parallel> \<^bold>0)"
-value "(((zero\<leftarrow>zero.\<^bold>0) \<parallel> \<^bold>0) \<parallel> (zero\<leftarrow>zero.\<^bold>0)) =C (((zero\<leftarrow>zero.\<^bold>0) \<parallel> \<^bold>0) \<parallel> (zero\<leftarrow>zero.\<^bold>0))"
-value "((\<^bold>0 \<parallel> p) \<parallel> \<^bold>0) =C p"
+
+
 
 (*
 normalization "(Null \<parallel> Null) =C Null"
@@ -104,26 +145,6 @@ value[nbe] "(Null\<parallel> Null) =C (Null \<parallel> Null)"
 
 *)
 
-
-theorem test:
-  shows "(p \<parallel> \<^bold>0) =C p"
-using leastConguence by blast
-
-(*
-consts nameEq :: "n \<Rightarrow> n \<Rightarrow> bool" (infix "=N" 42)
-abbreviation QuoteDrop
-  where "QuoteDrop \<equiv> \<forall>x. `\<acute>x`\<acute> =N x"
-abbreviation StructEquiv
-  where "StructEquiv \<equiv> \<forall>p q. p =C q \<longrightarrow> `p\<acute> =N `q\<acute>"
-abbreviation reflexiveN
-  where "reflexiveN \<equiv> \<forall> r. r =N r"
-abbreviation transitiveN
-  where "transitiveN \<equiv> \<forall> x. \<forall> y. \<forall> z. x =N y \<and> y =N z \<longrightarrow> x =N z"
-abbreviation symmetricN
-  where "symmetricN \<equiv> \<forall> x. \<forall> y. x =N y \<longrightarrow> y =N x"
-
-axiomatization where name_equivalence: "QuoteDrop \<and> StructEquiv \<and> reflexiveN \<and> transitiveN \<and> symmetricN"
-*)
 
 (*Name equivalence*)
 function name_equivalence :: "n \<Rightarrow> n \<Rightarrow> bool" (infix "=N" 52)
@@ -137,12 +158,6 @@ by auto
 termination
   by lexicographic_order
 
-abbreviation reflexiveR
-  where "reflexiveR \<equiv> \<lambda> R. \<forall> r. R r r"
-abbreviation transitiveR
-  where "transitiveR \<equiv> \<lambda> R. \<forall> x. \<forall> y. \<forall> z. R x y \<and> R y z \<longrightarrow> R x z"
-abbreviation symmetricR
-  where "symmetricR \<equiv> \<lambda> R. \<forall> x. \<forall> y. R x y \<longrightarrow> R y x"
 
 theorem name_equivalence_reflexive:
   shows "reflexiveR name_equivalence"
@@ -209,7 +224,7 @@ abbreviation three :: P
 abbreviation fore :: P
   where "fore \<equiv> \<acute>newName 4`"
 
-value "((one\<parallel>two)\<parallel>(three\<parallel>fore)) =C ((one\<parallel>three)\<parallel>(two\<parallel>fore))"
+value "`((one\<parallel>two)\<parallel>(three\<parallel>fore))\<parallel>Null\<acute> =N `((one\<parallel>three)\<parallel>(two\<parallel>fore))\<acute>"
 
 (*substitution*)
 (*Takes a process, specifies the names to be substituted and returns a process*)
@@ -228,18 +243,24 @@ function s :: "P \<Rightarrow> n \<Rightarrow> n \<Rightarrow> P" ("(_) {_\<setm
 where "(\<^bold>0){_\<setminus>_}             = \<^bold>0"
    | "(R \<parallel> S){q\<setminus>p}          = ((R){q\<setminus>p}) \<parallel> ((S){q\<setminus>p})" 
    | "( x \<leftarrow> y . R){q\<setminus>p}    = ((sn x q p) \<leftarrow> (z q p R)  . ((R {(z q p R)\<setminus>y}){q\<setminus>p}))"  
-   | "( x\<triangleleft>R\<triangleright>) {q\<setminus>p}         = (sn x q p) \<triangleleft>R{q\<setminus>p}\<triangleright>"
+   | "(x \<triangleleft> R \<triangleright>) {q\<setminus>p}       = (sn x q p) \<triangleleft>R{q\<setminus>p}\<triangleright>"
    | "(\<acute>x`){q\<setminus>p}            = (if (x =N p) then \<acute>q` else \<acute>x`)"
 apply pat_completeness by auto
 termination
   sorry (*induction measure on n_depth*)
 
 value "\<^bold>0{zero\<setminus>zero}"
-value "\<acute>zero` {two\<setminus> zero}"
+value "\<acute>zero` {`two\<acute>\<setminus> zero}"
 value "(\<^bold>0 \<parallel> (\<acute>zero`)) { (newName 2) \<setminus> zero }"
 
 theorem testerrr:
 shows "(\<^bold>0 \<parallel> (\<acute>zero`)) { (newName 2) \<setminus> zero } = (\<^bold>0 \<parallel> (\<acute>(newName 2)`))"
-by (simp add: leastConguence name_equivalence)
+by simp
+
+
+(*theory is consistent, yay*)
+lemma False
+sledgehammer
+oops
 
 end
