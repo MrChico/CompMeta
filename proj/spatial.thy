@@ -11,7 +11,42 @@ datatype P = Null             ("\<^bold>0")
      and n = Quote P          ("`_\<acute>")
 termination
   apply size_change
-  proof - qed
+  done
+
+(*12 = 34?*)
+(*  (1\<parallel>2)\<parallel>(3\<parallel>4) ?=C (3\<parallel>1)\<parallel>(4\<parallel>2) \<rightarrow> (((1\<parallel>2)\<parallel>3) \<parallel> 4) ?=C (((3\<parallel>1)\<parallel>4) \<parallel> 2)     *)
+(*Strategy: Check if 4 (rightmost process) is in (up to structural congruence)
+    314. When found, remove 4. 
+    (p_1 \<parallel> p_2 ... p_n) \<parallel> Q   =C?   (r_1 \<parallel> r_2 ... \<parallel> r_n) \<parallel> S = 
+    Compare Q and S. If equivalent, compare the rest of the list. 
+    If not, look for Q in (the list) R. 
+    If found, say Q =C r_i 
+    Compare P and r_1 ... r_(i-1) r_(i+1) \<parallel> S.
+*)
+(*left associate parallellism*)
+function la :: "P \<Rightarrow> P" where
+   "la (P \<parallel> (Q \<parallel> R)) = la (P \<parallel> Q \<parallel> R)"
+  (*|"la (P \<parallel> Q) = la P \<parallel> la Q"*)
+  | "la P = P"
+apply simp
+apply auto
+sorry
+termination
+sorry
+value "Null \<parallel> Null \<parallel> Null \<parallel> Null \<parallel> Null"
+value "la ((Null \<parallel> Null) \<parallel> (Null \<parallel> (Null \<parallel> Null)))"
+
+function congruence :: "P \<Rightarrow> P \<Rightarrow> bool" (infixl "=C" 52) and
+  findP :: "P \<Rightarrow> P \<Rightarrow> P \<Rightarrow> P \<Rightarrow> bool"  where
+  "Null =C Null = True"
+  | "(P \<parallel> Null) =C Q = P =C Q"
+  | "P \<parallel> (Q \<parallel> R) =C S = (P \<parallel> Q) \<parallel> R =C S" (*Always left associate*)
+  | "P \<parallel> Q =C R \<parallel> S = ((Q =C S \<and> P =C R) \<or> findP P Q R Null)"
+  | "findP P Null R S = False " (*Where P is 'atomical', which we try to find Q,
+    R an   is not on the form P\<parallel>Q*)
+  | "findP P Q\<parallel>R S T = ((P =C R) \<or> ((Q\<parallel>T) =C S) \<and> findP P Q S (T\<parallel>R))"
+  (*| "P \<parallel> Q =C R = "*)
+ (* | "S =C P \<parallel> (Q \<parallel> R) = (P \<parallel> Q) \<parallel> R =C S"*)
 
 (*Syntactic sugar for output on a channel*)
 abbreviation Output :: "n \<Rightarrow> n \<Rightarrow> P" ("_[_]")
@@ -41,16 +76,23 @@ where
  |"getSet a = {#a#}"
 
   
-fun congru :: "P \<Rightarrow> P \<Rightarrow> bool" (infixl "=C" 42)
+fun congru :: "P \<Rightarrow> P \<Rightarrow> bool" (infixl "=C" 52)
 where
-   "congru (a\<parallel>b) (c\<parallel>d) = ((getSet (a\<parallel>b)) = (getSet (c\<parallel>d)))"
-  |"congru (a\<parallel>b) c     = ((a =C \<^bold>0 \<and> b =C c) \<or> (b = \<^bold>0 \<and> a =C c))" 
-  |"congru  a    (b\<parallel>c) = (( b =C \<^bold>0 \<and> a =C c) \<or> (c =C \<^bold>0 \<and> a =C c))"
-  |"congru a b         = (a = b)"
+   "(a\<parallel>b) =C (c\<parallel>d) = ((getSet (a\<parallel>b)) = (getSet (c\<parallel>d)))"
+  |"(a\<parallel>b) =C c     = ((a =C \<^bold>0 \<and> b =C c) \<or> (b = \<^bold>0 \<and> a =C c))" 
+  |"a  =C (b\<parallel>c) = (( b =C \<^bold>0 \<and> a =C c) \<or> (c =C \<^bold>0 \<and> a =C c))"
+  |"(a\<leftarrow>b. P) =C (c\<leftarrow>e. Q)   = ((a = b) \<and> (c = e) \<and> (P =C Q))"
+  |"(a\<leftarrow>b. P) =C Q   = False"
+  |"(a \<triangleleft> P \<triangleright>) =C (b \<triangleleft> Q \<triangleright> )   = ((a = b) \<and> (P =C Q))" 
+  |"(a \<triangleleft> P \<triangleright>) =C Q   = False" 
+  |"(\<acute>P` =C \<acute>Q`)   = (P = Q)"
+  |"(\<acute>P` =C Q)   = False"
+(*termination
+  sorry
+*)
 
 
-
-
+(*
 consts conguence :: "P \<Rightarrow> P \<Rightarrow> bool" (infix "=C" 42)
 
 abbreviation reflexive
