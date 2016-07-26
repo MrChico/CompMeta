@@ -552,17 +552,51 @@ fun toPar:: "P list \<Rightarrow> P" where
  |"toPar (x#[]) = x"
  |"toPar (x#y#xs) = (x \<parallel> (toPar (y#xs)))"
 
+
+
+fun syncable:: "P \<Rightarrow> P \<Rightarrow> bool" where
+  "syncable (Lift x Q) (Input y z P)    = (x =N z)"
+ |"syncable (Input y z P) (Lift x Q)    = (x =N z)"
+ |"syncable (Lift y P) (Lift x Q)       = False"
+ |"syncable (Input y z P) (Input a b Q) = False"
+ |"syncable _ (vc \<parallel> vd)                 = False"
+ |"syncable   (vc \<parallel> vd) _               = False"
+ |"syncable   (\<acute>v`) _                   = False"
+ |"syncable _ (\<acute>v`)                     = False"
+ |"syncable   Null _                    = False"
+ |"syncable _ Null                      = False"
+
+fun sync:: "P \<Rightarrow> P \<Rightarrow> P" where
+  "sync (Lift x Q) (Input y z P) = (P s{`Q\<acute>\<setminus>y})"
+ |"sync (Input y z P) (Lift x Q) = (P s{`Q\<acute>\<setminus>y})"
+
+function fineRun:: "P list \<Rightarrow> P list \<Rightarrow> P list \<Rightarrow> P list" where
+   "fineRun []     []  []         = []"
+  |"fineRun (x#[]) []  []         = (x#[])"
+  |"fineRun (x#y#xs) []  zs       = (fineRun (y#xs) (x#[]) zs)"
+  |"fineRun [] (y#ys) (z#[])      = (z#y#ys)"
+  |"fineRun [] (y#ys) (z#zs)      = (fineRun zs (z#y#ys) [])"
+  |"fineRun (x#xs) (y#ys) zs      = (if (syncable x y) then ((sync x y)#xs@ys@zs) else (fineRun (xs) (y#ys) (x#zs)))"
+apply auto
+sorry
+termination
+sorry
+
 fun step:: "P \<Rightarrow> P" where
-  "step P = toPar (getList P)"
+  "step P = toPar( fineRun (getList P) [] [])"
 
-(*
-fun fineRun:: "P list \<Rightarrow> P list \<Rightarrow> P list \<Rightarrow> P list" where
-   "fineRun []     []  []        = []"
-  |"fineRun (x#[]) []  []        = (x#[])"
-  |"fineRun (x#xs) (y#ys)  zs    = 
-*)
 
-abbreviation replication where "replication \<equiv> (\<lambda>y.\<lambda>(P,x).(x\<triangleleft>((x)\<leftarrow>y.(x[[y]]\<parallel>\<acute>y`))\<parallel>P\<triangleright>\<parallel>(x \<leftarrow> y.(x[[y]]\<parallel>\<acute>y`))))(`one\<acute>)"
+abbreviation replication where "replication \<equiv> (\<lambda>y.\<lambda>(P,x).(x\<triangleleft>(x\<leftarrow>y.(x[[y]]\<parallel>\<acute>y`))\<parallel>P\<triangleright>\<parallel>(x \<leftarrow> y.(x[[y]]\<parallel>\<acute>y`))))(`zero[[zero]]\<acute>)"
+
+
+value "two"
+
+abbreviation x where "x \<equiv> zero"
+abbreviation y where "y \<equiv> `x[[x]]\<acute>"
+value "(replication (two, zero))"
+value "step (replication (two, zero))"
+value "step(step (replication (two, zero)))"
+value "step(step(step (replication (two, zero))))"
 
 lemma False
 sledgehammer

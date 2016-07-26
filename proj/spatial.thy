@@ -14,7 +14,7 @@ abbreviation symmetric
 
 (*The mutually recursive datatypes of processes and names*)
 datatype P = Null             ("\<^bold>0")
-           | Input n n P      ("_\<leftarrow>_._" 80)
+           | Input n n P      ("_\<leftarrow>_._." 80)
            | Lift n P         ("_\<triangleleft>_\<triangleright>" 80)
            | Drop n           ("\<acute>_`" 80)
            | Par P P          (infixl "\<parallel>" 75)    
@@ -34,11 +34,11 @@ abbreviation zero :: n
   where "zero \<equiv> `\<^bold>0\<acute>"
 
 
-value "zero \<leftarrow> zero.\<^bold>0"
+value "zero \<leftarrow> zero.\<^bold>0."
 value "\<^bold>0\<parallel>\<^bold>0"
 value "\<acute>zero`"
 value "zero\<triangleleft>\<^bold>0\<triangleright>"
-value "(c\<leftarrow>d.(e))"
+value "(c\<leftarrow>d.(e).)"
 
 fun getList :: "P \<Rightarrow> P list"
 where
@@ -60,14 +60,14 @@ function congru :: "P \<Rightarrow> P \<Rightarrow> bool" (infixl "=C" 42)
      and eq2 :: "P list \<Rightarrow> P list \<Rightarrow> P list \<Rightarrow> bool"
 where
    "congru (a\<parallel>b) (c\<parallel>d)       = (eq2 (getList (a\<parallel>b)) (getList (c\<parallel>d)) [])"
-  |"congru (x\<leftarrow>y.(a)) (xx\<leftarrow>yy.(b)) = ((a =C b) \<and> (x=xx) \<and> (y = yy))"
+  |"congru (x\<leftarrow>y.(a).) (xx\<leftarrow>yy.(b).) = ((a =C b) \<and> (x=xx) \<and> (y = yy))"
   |"congru (x\<triangleleft>a\<triangleright>) (y\<triangleleft>b\<triangleright>)     = ((a =C b) \<and> (x = y))"
   |"congru (\<acute>a`) (\<acute>b`)       = (a = b)"
   |"congru Null Null         = True"
   |"congru (a\<parallel>b) Null        = ((a =C Null)\<and>(b =C Null))"
   |"congru Null (a\<parallel>b)        = ((a =C Null)\<and>(b =C Null))"
-  |"congru (a\<parallel>b) (c\<leftarrow>d.(e))  = (eq2 (getList (a\<parallel>b)) ((c\<leftarrow>d.(e))#[]) [])"
-  |"congru (c\<leftarrow>d.(e)) (a\<parallel>b)  = (eq2 (getList (a\<parallel>b)) ((c\<leftarrow>d.(e))#[]) [])"
+  |"congru (a\<parallel>b) (c\<leftarrow>d.(e).)  = (eq2 (getList (a\<parallel>b)) ((c\<leftarrow>d.(e).)#[]) [])"
+  |"congru (c\<leftarrow>d.(e).) (a\<parallel>b)  = (eq2 (getList (a\<parallel>b)) ((c\<leftarrow>d.(e).)#[]) [])"
   |"congru (a\<parallel>b) (c\<triangleleft>d\<triangleright>)      = (eq2 (getList (a\<parallel>b)) ((c\<triangleleft>d\<triangleright>)#[]) [])"
   |"congru (c\<triangleleft>d\<triangleright>) (a\<parallel>b)      = (eq2 (getList (a\<parallel>b)) ((c\<triangleleft>d\<triangleright>)#[]) [])"
   |"congru (a\<parallel>b) (\<acute>c`)       = (eq2 (getList (a\<parallel>b)) ((\<acute>c`)#[]) [])"
@@ -76,16 +76,16 @@ where
   (* for f*cks sake, why cant I have some statement for remaining cases? *)
   |"congru (\<acute>a`) Null        = False"
   |"congru Null (\<acute>b`)        = False"
-  |"congru (\<acute>a`) (_\<leftarrow>_._)    = False"
-  |"congru (_\<leftarrow>_._) (\<acute>b`)    = False"
+  |"congru (\<acute>a`) (_\<leftarrow>_._.)    = False"
+  |"congru (_\<leftarrow>_._.) (\<acute>b`)    = False"
   |"congru (\<acute>a`) (_\<triangleleft>_\<triangleright>)      = False"
   |"congru (_\<triangleleft>_\<triangleright>) (\<acute>b`)      = False"
   |"congru (_\<triangleleft>_\<triangleright>) Null       = False"
   |"congru Null (_\<triangleleft>_\<triangleright>)       = False"
-  |"congru (_\<triangleleft>_\<triangleright>) (_\<leftarrow>_._)   = False"
-  |"congru (_\<leftarrow>_._) (_\<triangleleft>_\<triangleright>)   = False"
-  |"congru (_\<leftarrow>_._) Null     = False"
-  |"congru Null (_\<leftarrow>_._)     = False"
+  |"congru (_\<triangleleft>_\<triangleright>) (_\<leftarrow>_._.)   = False"
+  |"congru (_\<leftarrow>_._.) (_\<triangleleft>_\<triangleright>)   = False"
+  |"congru (_\<leftarrow>_._.) Null     = False"
+  |"congru Null (_\<leftarrow>_._.)     = False"
 
   |"eq2 [] [] [] = True"
   |"eq2 (x#xs) [] [] = False"
@@ -104,7 +104,7 @@ abbreviation maxl where "maxl \<equiv> \<lambda>l. foldl (\<lambda>a.\<lambda>b.
 
 fun sdepth :: "P \<Rightarrow> nat" where
   "sdepth Null = 0"
-  | "sdepth (x \<leftarrow> y . P) = 1 + sdepth P"
+  | "sdepth (x \<leftarrow> y . P.) = 1 + sdepth P"
   | "sdepth (x \<triangleleft> P \<triangleright>) = 1 + sdepth P"
   | "sdepth (P \<parallel> Q) = 1 + (max (sdepth P) (sdepth Q))"
   | "sdepth (\<acute>x`) = 0"
@@ -121,7 +121,7 @@ function
   depth :: "P \<Rightarrow> nat"
 where
   "depth \<^bold>0 = 0"
-  | "depth (x \<leftarrow> y . P) = 1 + depth P"
+  | "depth (x \<leftarrow> y . P.) = 1 + depth P"
   | "depth (x \<triangleleft> P \<triangleright>) = 1 + depth P"
   | "depth (P \<parallel> Q) = 1 + (maxl (map depth (getList (P\<parallel>Q)))) + llength (getList (P\<parallel>Q))"
   | "depth (\<acute>x`) = 0"
@@ -357,11 +357,11 @@ theorem zeroRight:
 sorry
 
 theorem someshit:
-shows "(((zero\<leftarrow>zero.\<^bold>0) \<parallel> \<^bold>0) \<parallel> (zero\<leftarrow>zero.\<^bold>0)) =C (((zero\<leftarrow>zero.\<^bold>0) \<parallel> (zero\<leftarrow>zero.\<^bold>0)) \<parallel> \<^bold>0)"
+shows "(((zero\<leftarrow>zero.\<^bold>0.) \<parallel> \<^bold>0) \<parallel> (zero\<leftarrow>zero.\<^bold>0.)) =C (((zero\<leftarrow>zero.\<^bold>0.) \<parallel> (zero\<leftarrow>zero.\<^bold>0.)) \<parallel> \<^bold>0)"
 by simp
 
 value "getList ((a \<parallel> b) \<parallel> c)"
-value "(((zero\<leftarrow>zero.\<^bold>0) \<parallel> \<^bold>0) \<parallel> (zero\<leftarrow>zero.\<^bold>0)) =C (((zero\<leftarrow>zero.\<^bold>0) \<parallel> (zero\<leftarrow>zero.\<^bold>0)) \<parallel> \<^bold>0)"
+value "(((zero\<leftarrow>zero.\<^bold>0.) \<parallel> \<^bold>0) \<parallel> (zero\<leftarrow>zero.\<^bold>0.)) =C (((zero\<leftarrow>zero.\<^bold>0.) \<parallel> (zero\<leftarrow>zero.\<^bold>0.)) \<parallel> \<^bold>0)"
 
 
 (*Name equivalence*)
@@ -436,7 +436,7 @@ using parKommutative by auto
 (*Gives the set of free names in a process*)
 fun free :: "P \<Rightarrow> n set" where
   "free \<^bold>0 = {}"
-  | "free (x \<leftarrow> y . P) = {x} \<union> (free(P) - {y})"
+  | "free (x \<leftarrow> y . P.) = {x} \<union> (free(P) - {y})"
   | "free (x \<triangleleft> P \<triangleright>) = {x} \<union> free P"
   | "free (P \<parallel> Q) = free P \<union> free Q"
   | "free (\<acute>x`) = {x}"
@@ -444,7 +444,7 @@ fun free :: "P \<Rightarrow> n set" where
 (*Gives the set of bound names in a process*)
 fun bound :: "P \<Rightarrow> n set" where
   "bound \<^bold>0 = {}"
-  | "bound (x \<leftarrow> y . P) = {y} \<union> bound(P)"
+  | "bound (x \<leftarrow> y . P.) = {y} \<union> bound(P)"
   | "bound (x \<triangleleft> P \<triangleright>) = bound P"
   | "bound (P \<parallel> Q) = bound P \<union> bound Q"
   | "bound (\<acute>x`) = {}"
@@ -507,7 +507,7 @@ abbreviation genz
 function s :: "P \<Rightarrow> n \<Rightarrow> n \<Rightarrow> P" ("(_) {_\<setminus>_}" 52)
 where "(\<^bold>0){_\<setminus>_}             = \<^bold>0"
    | "(R \<parallel> S){q\<setminus>p}          = ((R){q\<setminus>p}) \<parallel> ((S){q\<setminus>p})" 
-   | "( x \<leftarrow> y . R){q\<setminus>p}    = ((sn x q p) \<leftarrow> (genz q p R)  . ((R {(genz q p R)\<setminus>y}){q\<setminus>p}))"  
+   | "( x \<leftarrow> y . R.){q\<setminus>p}    = ((sn x q p) \<leftarrow> (genz q p R)  . ((R {(genz q p R)\<setminus>y}){q\<setminus>p}).)"  
    | "(x \<triangleleft> R \<triangleright>) {q\<setminus>p}       = ((sn x q p) \<triangleleft>R{q\<setminus>p}\<triangleright>)"
    | "(\<acute>x`){q\<setminus>p}            = (if (x =N p) then \<acute>q` else \<acute>x`)"
 apply pat_completeness by auto
@@ -520,10 +520,10 @@ apply (relation "measure (\<lambda>(p,x,y). (P_depth p))", auto)
 (* semantic substitution *)
 function ss :: "P \<Rightarrow> n \<Rightarrow> n \<Rightarrow> P" ("(_) s{_\<setminus>_}" 52)
 where "(\<^bold>0)s{_\<setminus>_}             = \<^bold>0"
-   | "(R \<parallel> S)s{q\<setminus>p}          = ((R){q\<setminus>p}) \<parallel> ((S){q\<setminus>p})" 
-   | "( x \<leftarrow> y . R)s{q\<setminus>p}    = ((sn x q p) \<leftarrow> (genz q p R)  . ((R {(genz q p R)\<setminus>y}){q\<setminus>p}))"  
-   | "(x \<triangleleft> R \<triangleright>) s{q\<setminus>p}       = ((sn x q p) \<triangleleft>R{q\<setminus>p}\<triangleright>)"
-   | "(\<acute>x`)s{`q\<acute>\<setminus>p}            = (if (x =N p) then q else \<acute>x`)" (* semantic substitution *)
+   | "(R \<parallel> S) s{q\<setminus>p}          = ((R) s{q\<setminus>p}) \<parallel> ((S) s{q\<setminus>p})" 
+   | "( x \<leftarrow> y . R.) s{q\<setminus>p}    = ((sn x q p) \<leftarrow> (genz q p R)  . ((R {(genz q p R)\<setminus>y}) s{q\<setminus>p}).)"  
+   | "(x \<triangleleft> R \<triangleright>) s{q\<setminus>p}       = ((sn x q p) \<triangleleft>R s{q\<setminus>p}\<triangleright>)"
+   | "(\<acute>x`) s{`q\<acute>\<setminus>p}            = (if (x =N p) then q else \<acute>x`)" (* semantic substitution *)
 apply pat_completeness by auto
 termination
 apply (relation "measure (\<lambda>(p,x,y). (P_depth p))", auto)
@@ -555,8 +555,8 @@ fun toPar:: "P list \<Rightarrow> P" where
 
 
 fun syncable:: "P \<Rightarrow> P \<Rightarrow> bool" where
-  "syncable (Lift x Q) (Input y z P)    = (x =N y)"
- |"syncable (Input y z P) (Lift x Q)    = (x =N y)"
+  "syncable (Lift x Q) (Input y z P)    = (x =N z)"
+ |"syncable (Input y z P) (Lift x Q)    = (x =N z)"
  |"syncable (Lift y P) (Lift x Q)       = False"
  |"syncable (Input y z P) (Input a b Q) = False"
  |"syncable _ (vc \<parallel> vd)                 = False"
@@ -586,7 +586,8 @@ fun step:: "P \<Rightarrow> P" where
   "step P = toPar( fineRun (getList P) [] [])"
 
 
-abbreviation replication where "replication \<equiv> (\<lambda>y.\<lambda>(P,x).(x\<triangleleft>((x)\<leftarrow>y.(x[[y]]\<parallel>\<acute>y`))\<parallel>P\<triangleright>\<parallel>(x \<leftarrow> y.(x[[y]]\<parallel>\<acute>y`))))(`zero[[zero]]\<acute>)"
+abbreviation replication where "replication \<equiv> (\<lambda>y.\<lambda>(P,x).(x\<triangleleft>((y\<leftarrow>x.(x[[y]]\<parallel>\<acute>y`).)\<parallel>P)\<triangleright>\<parallel>(y \<leftarrow> x.(x[[y]]\<parallel>\<acute>y`).)))(`zero[[zero]]\<acute>)"
+
 
 value "two"
 
@@ -596,6 +597,14 @@ value "(replication (two, zero))"
 value "step (replication (two, zero))"
 value "step(step (replication (two, zero)))"
 value "step(step(step (replication (two, zero))))"
+value "step(step(step(step (replication (two, zero)))))"
+
+(*
+  normal:
+"x[[`y\<leftarrow>x.x[[y]] \<parallel> \<acute>y`. \<parallel> \<acute>`y[[y]]\<acute>`\<acute>]] \<parallel> \<acute>`y\<leftarrow>x.x[[y]] \<parallel> \<acute>y`. \<parallel> \<acute>`y[[y]]\<acute>`\<acute>`"
+"x[[`y\<leftarrow>x.x[[y]] \<parallel> \<acute>y`. \<parallel> \<acute>`y[[y]]\<acute>`\<acute>]] \<parallel> \<acute>`y\<leftarrow>x.x[[y]] \<parallel> \<acute>y`. \<parallel> \<acute>`y[[y]]\<acute>`\<acute>`"
+
+*)
 
 lemma False
 sledgehammer
