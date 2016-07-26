@@ -356,7 +356,6 @@ theorem zeroRight:
   shows "(a \<parallel> Null) =C a"
 sorry
 
-
 theorem someshit:
 shows "(((zero\<leftarrow>zero.\<^bold>0) \<parallel> \<^bold>0) \<parallel> (zero\<leftarrow>zero.\<^bold>0)) =C (((zero\<leftarrow>zero.\<^bold>0) \<parallel> (zero\<leftarrow>zero.\<^bold>0)) \<parallel> \<^bold>0)"
 by simp
@@ -426,8 +425,6 @@ apply auto
 apply (simp add: assms congruTransitive eqTransitive)
 *)
 sorry
-
-
 
 
 value "`p \<parallel> (\<^bold>0 \<parallel> q)\<acute> =N `q \<parallel> p\<acute>"
@@ -571,5 +568,14 @@ lemma False
 sledgehammer
 (*theory is consistent, yay*)
 oops
+
+section\<open>Alpha equivalence\<close>
+text\<open>Alpha equivalence equates processes that only differ by their bound variables. In our calculus,
+the bound variables are the names to which we bound input values. As an example we would want the 
+following terms to be alpha-equal: \<close>
+
+theorem alphaEq: 
+shows "\<^bold>0 \<leftarrow> \<^bold>0. P \<equiv>\<alpha> one \<leftarrow> \<^bold>0. P"
+sorry
 
 end

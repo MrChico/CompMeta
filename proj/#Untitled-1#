@@ -1,7 +1,0 @@
-theory congru_properties
-imports Main spatial
-begin
-
-
-
-end
