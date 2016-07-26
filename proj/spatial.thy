@@ -587,24 +587,15 @@ fun step:: "P \<Rightarrow> P" where
 
 
 abbreviation replication where "replication \<equiv> (\<lambda>y.\<lambda>(P,x).(x\<triangleleft>((y\<leftarrow>x.(x[[y]]\<parallel>\<acute>y`).)\<parallel>P)\<triangleright>\<parallel>(y \<leftarrow> x.(x[[y]]\<parallel>\<acute>y`).)))(`zero[[zero]]\<acute>)"
+abbreviation xx where "xx \<equiv> zero"
+abbreviation yy where "yy \<equiv> `xx[[xx]]\<acute>"
 
-
-value "two"
-
-abbreviation x where "x \<equiv> zero"
-abbreviation y where "y \<equiv> `x[[x]]\<acute>"
 value "(replication (two, zero))"
 value "step (replication (two, zero))"
 value "step(step (replication (two, zero)))"
 value "step(step(step (replication (two, zero))))"
 value "step(step(step(step (replication (two, zero)))))"
 
-(*
-  normal:
-"x[[`y\<leftarrow>x.x[[y]] \<parallel> \<acute>y`. \<parallel> \<acute>`y[[y]]\<acute>`\<acute>]] \<parallel> \<acute>`y\<leftarrow>x.x[[y]] \<parallel> \<acute>y`. \<parallel> \<acute>`y[[y]]\<acute>`\<acute>`"
-"x[[`y\<leftarrow>x.x[[y]] \<parallel> \<acute>y`. \<parallel> \<acute>`y[[y]]\<acute>`\<acute>]] \<parallel> \<acute>`y\<leftarrow>x.x[[y]] \<parallel> \<acute>y`. \<parallel> \<acute>`y[[y]]\<acute>`\<acute>`"
-
-*)
 
 lemma False
 sledgehammer
