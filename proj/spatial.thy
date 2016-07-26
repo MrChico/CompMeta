@@ -49,11 +49,11 @@ where
 
 function la :: "P \<Rightarrow> P"
 where
-  "la (a\<parallel>(b\<parallel>c)) = la ((a\<parallel>b)\<parallel>c)"
+  "la (a\<parallel>(b\<parallel>c)) = la (a\<parallel>b\<parallel>c)"
  |"la a = a"
 apply pat_completeness
 apply auto
-apply metis
+sorry
 
 value "la (Null \<parallel> (Null \<parallel> (Null \<parallel> (Null \<parallel> Null))))"
 value "la ((Null \<parallel> Null) \<parallel> (Null \<parallel> (Null \<parallel> Null)))"
@@ -132,7 +132,7 @@ apply auto
 apply pat_completeness
 done
 termination
-(*apply (relation "measure (\<lambda>x.(sdepth x))")
+apply (relation "measure (\<lambda>x.(sdepth x))")
 apply auto
 proof -
   fix P Q x
@@ -557,5 +557,14 @@ by simp
 lemma False
 sledgehammer
 oops
+
+section\<open>Alpha equivalence\<close>
+text\<open>Alpha equivalence equates processes that only differ by their bound variables. In our calculus,
+the bound variables are the names to which we bound input values. As an example we would want the 
+following terms to be alpha-equal: \<close>
+
+theorem alphaEq: 
+shows "\<^bold>0 \<leftarrow> \<^bold>0. P \<equiv>\<alpha> one \<leftarrow> \<^bold>0. P"
+sorry
 
 end
