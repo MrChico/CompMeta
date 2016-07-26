@@ -565,7 +565,7 @@ fun fineRun:: "P list \<Rightarrow> P list \<Rightarrow> P list \<Rightarrow> P 
   |"fineRun (x#xs) (y#ys)  zs    = 
 *)
 
-abbreviation replication where "replication \<equiv> \<lambda>(P,x,y).(x\<triangleleft>((x)\<leftarrow>y.(x[[y]]\<parallel>\<acute>y`))\<parallel>P\<triangleright>\<parallel>(x \<leftarrow> y.(x[[y]]\<parallel>\<acute>y`)))"
+abbreviation replication where "replication \<equiv> (\<lambda>y.\<lambda>(P,x).(x\<triangleleft>((x)\<leftarrow>y.(x[[y]]\<parallel>\<acute>y`))\<parallel>P\<triangleright>\<parallel>(x \<leftarrow> y.(x[[y]]\<parallel>\<acute>y`))))(`one\<acute>)"
 
 lemma False
 sledgehammer
