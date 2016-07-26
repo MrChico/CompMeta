@@ -109,21 +109,13 @@ fun sdepth :: "P \<Rightarrow> nat" where
   | "sdepth (P \<parallel> Q) = 1 + (max (sdepth P) (sdepth Q))"
   | "sdepth (\<acute>x`) = 0"
 
-fun di::"nat \<Rightarrow> nat" where 
-  "di 0 = 0"
-| "di (Suc(Suc v)) = (Suc (di v))"
-
-
-abbreviation llength where "llength \<equiv> \<lambda>x::P list. (di ((length x)*(length x + 1)))"
-
-
 function
   depth :: "P \<Rightarrow> nat"
 where
   "depth \<^bold>0 = 0"
   | "depth (x \<leftarrow> y . P) = 1 + depth P"
   | "depth (x \<triangleleft> P \<triangleright>) = 1 + depth P"
-  | "depth (P \<parallel> Q) = 1 + (maxl (map depth (getList (P\<parallel>Q)))) + llength (getList (P\<parallel>Q))"
+  | "depth (P \<parallel> Q) = 1 + (maxl (map depth (getList (P\<parallel>Q))))"
   | "depth (\<acute>x`) = 0"
 apply auto
 apply pat_completeness
@@ -138,6 +130,16 @@ proof -
   (* damn it, so close *)*)
 sorry
 
+
+(*
+lemma s1:"ldepth (getList a) < Suc (depth a)" sorry
+
+lemma s2:"ldepth ((getList a)@(getList b)) = max (ldepth (getList a)) (ldepth (getList b))" sorry
+
+lemma s3:"(a::nat) < Suc (max a b::nat)" sorry
+*)
+
+
 termination congru
 (* cannot come up with a good measuring function without *)
 apply (relation "measure (
@@ -147,7 +149,11 @@ apply (relation "measure (
 | Inr (a,b,c) 
     \<Rightarrow> max (maxl (map depth (a))) (maxl (map depth (b@c))) )")
 apply auto
+sledgehammer
+
 sorry
+
+
 
 
 value "(( \<^bold>0 \<parallel> (n\<^sub>1\<triangleleft>\<^bold>0 \<parallel> \<^bold>0\<triangleright>)) =C (n\<^sub>1\<triangleleft>\<^bold>0\<triangleright>))"
@@ -273,7 +279,8 @@ theorem asdadsds:
       from assms have "a1 =C a1"
     sledgehammer
 *)
-(*
+print_theorems
+
 theorem congruReflexive:
   shows "reflexive congru"
   and "\<forall>b::P. eq2 (getList b) (getList b) []"
@@ -281,9 +288,7 @@ proof auto
   fix r
   fix b::P
   show "r =C r"  "eq2 (getList r) (getList r) []"
-  apply (induct r)
-  apply auto
-  proof -
+  proof (induct r and r rule: congru_eq2.induct)
     show "Null =C Null" by simp
   next
     fix x1 x2a r2
@@ -313,7 +318,21 @@ proof auto
   next
   qed
 qed
+
+(*
+theorem cRefl:
+  shows "reflexive eq"
+sledgehammer[prover=remote_leo2]
 *)
+
+
+theorem eqTransitive:
+  shows "transitive eq"
+sorry
+
+theorem eqSymmetric:
+  shows "symmetric eq"
+sorry
 
 theorem congruTransitive:
   shows "transitive congru"
@@ -326,15 +345,29 @@ sorry
 
 theorem parAssoc:
   shows "((a\<parallel>b)\<parallel>c) =C (a\<parallel>(b\<parallel>c))"
+by (metis append_assoc congru.simps(1) congruReflexive getList.simps(2))
+
+lemma eq_congruence: "eq a a"
 sorry
 
 theorem zeroLeft:
   shows "(Null \<parallel> a) =C a"
+(*
+by (smt congru.simps(1) congru.simps(10) congru.simps(13) congru.simps(5) congru.simps(6) congru.simps(9) congruReflexive congruSymmetric getList.elims getList.simps(1) getList.simps(2) self_append_conv2)
+*)
 sorry
 
 theorem zeroRight:
   shows "(a \<parallel> Null) =C a"
+
+(*
+by (smt append_self_conv congru.simps(1) congru.simps(10) congru.simps(13) congru.simps(5) congru.simps(6) congru.simps(9) congruReflexive congruSymmetric getList.elims getList.simps(1) getList.simps(2))
+*)
 sorry
+theorem yeroright:
+  shows "a =C Null \<parallel> a"
+by (simp add: congruSymmetric zeroLeft)
+
 
 theorem someshit:
 shows "(((zero\<leftarrow>zero.\<^bold>0) \<parallel> \<^bold>0) \<parallel> (zero\<leftarrow>zero.\<^bold>0)) =C (((zero\<leftarrow>zero.\<^bold>0) \<parallel> (zero\<leftarrow>zero.\<^bold>0)) \<parallel> \<^bold>0)"
@@ -347,42 +380,24 @@ value "(((zero\<leftarrow>zero.\<^bold>0) \<parallel> \<^bold>0) \<parallel> (ze
 (*Name equivalence*)
 fun name_equivalence :: "n \<Rightarrow> n \<Rightarrow> bool" (infix "=N" 52)
   where 
-    "zero =N `y\<acute> = (Null =C y)"
+    "`\<acute>x`\<acute> =N y = (x =N y)"
+  | "x =N `\<acute>y`\<acute> = (x =N y)"
+  | "zero =N `y\<acute> = (Null =C y)"
   | "`y\<acute> =N zero = (Null =C y)"
   | "((` (Input x y P) \<acute>) =N `z\<acute>) = ((Input x y P)  =C z)"
   | "(`z\<acute> =N (` (Input x y P) \<acute>)) = ((Input x y P)  =C z)"
   | "((` P \<parallel> Q \<acute>) =N `z\<acute>) = ( P \<parallel> Q  =C z)"
   | "( `z\<acute> =N(` P \<parallel> Q \<acute>)) = ( P \<parallel> Q  =C z)"
   | "((` x\<triangleleft>P\<triangleright> \<acute>) =N `z\<acute>) = (x\<triangleleft>P \<triangleright> =C z)"
-  | "( `z\<acute> =N (` x\<triangleleft>P\<triangleright> \<acute>)) = (x\<triangleleft>P \<triangleright> =C z)"
+(*  | "( `z\<acute> =N (` x\<triangleleft>P\<triangleright> \<acute>)) = (x\<triangleleft>P \<triangleright> =C z)"*)
 
-  | "`\<acute>a`\<acute> =N b = (a =N b)"
-  | "a =N `\<acute>b`\<acute> = (a =N b)"
-(*
-Null             ("\<^bold>0")
-           | Input n n P      ("_\<leftarrow>_._" 80)
-           | Lift n P         ("_\<triangleleft>_\<triangleright>" 80)
-           | Drop n           ("\<acute>_`" 80)
-           | Par P P          (infixl "\<parallel>" 75)   *)
 
 value "`\<acute>zero`\<acute> =N zero"
 value "`\<acute>`\<acute>zero`\<acute>`\<acute> =N zero"
-
+(*
 theorem name_equivalence_reflexive:
-  shows "reflexive name_equivalence"
-apply auto
-proof -
-  fix r
-  show "r =N r"
-  apply (induction r rule: name_equivalence.induct)
-  apply auto
-  proof -
-    fix y
-    assume "y =N y"
-    show "y =N `\<acute>y`\<acute>"
-    apply (simp add: name_equivalence.simps())
-sorry
-(* 
+  shows "reflexiveR name_equivalence"
+sorry 
 theorem name_equivalence_symmetric:
   shows "symmetricR name_equivalence"
 sorry
