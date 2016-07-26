@@ -46,15 +46,18 @@ where
  |"getList (a\<parallel>b) = ((getList a)@(getList b))"
  |"getList a = [a]"
 
-(*
-fun la :: "P \<Rightarrow> P"
+
+function la :: "P \<Rightarrow> P"
 where
-  "la (a\<parallel>(b\<parallel>c)) = ((la (a\<parallel>b))\<parallel>(la c))"
+  "la (a\<parallel>(b\<parallel>c)) = la ((a\<parallel>b)\<parallel>c)"
  |"la a = a"
+apply pat_completeness
+apply auto
+apply metis
 
 value "la (Null \<parallel> (Null \<parallel> (Null \<parallel> (Null \<parallel> Null))))"
 value "la ((Null \<parallel> Null) \<parallel> (Null \<parallel> (Null \<parallel> Null)))"
-*)
+
 
 function congru :: "P \<Rightarrow> P \<Rightarrow> bool" (infixl "=C" 42)
      and eq2 :: "P list \<Rightarrow> P list \<Rightarrow> P list \<Rightarrow> bool"
@@ -315,13 +318,26 @@ proof auto
 qed
 *)
 
+
+theorem congruReflexive:
+  shows "reflexive congru"
+sorry
+
 theorem congruTransitive:
   shows "transitive congru"
 sorry
 
-
 theorem congruSymmetric:
   shows "symmetric congru"
+sorry
+
+
+theorem eqSymmetric:
+  shows "\<forall> a b. (eq2 a b [] \<longrightarrow> eq2 b a [])"
+sorry
+
+theorem eqTransitive:
+  shows "\<forall> a b c. (((eq2 a b []) \<and> (eq2 b c [])) \<longrightarrow> (eq2 a c []))"
 sorry
 
 theorem parAssoc:
@@ -347,23 +363,36 @@ value "(((zero\<leftarrow>zero.\<^bold>0) \<parallel> \<^bold>0) \<parallel> (ze
 (*Name equivalence*)
 fun name_equivalence :: "n \<Rightarrow> n \<Rightarrow> bool" (infix "=N" 52)
   where 
-    "zero =N `y\<acute> = (Null =C y)"
-  | "`y\<acute> =N zero = (Null =C y)"
-  | "((` (Input x y P) \<acute>) =N `z\<acute>) = ((Input x y P)  =C z)"
-  | "(`z\<acute> =N (` (Input x y P) \<acute>)) = ((Input x y P)  =C z)"
-  | "((` P \<parallel> Q \<acute>) =N `z\<acute>) = ( P \<parallel> Q  =C z)"
-  | "( `z\<acute> =N(` P \<parallel> Q \<acute>)) = ( P \<parallel> Q  =C z)"
-  | "((` x\<triangleleft>P\<triangleright> \<acute>) =N `z\<acute>) = (x\<triangleleft>P \<triangleright> =C z)"
-  | "( `z\<acute> =N (` x\<triangleleft>P\<triangleright> \<acute>)) = (x\<triangleleft>P \<triangleright> =C z)"
+    "zero =N `Input x y P\<acute> = False"
+  | "zero =N `Lift _ _\<acute> = False"
+  | "zero =N `Par P Q\<acute> = (Null =C (P\<parallel>Q))"
+  | "zero =N `\<acute>a`\<acute> = (zero =N a)"
+  | "zero =N zero = True"
 
-  | "`\<acute>a`\<acute> =N b = (a =N b)"
-  | "a =N `\<acute>b`\<acute> = (a =N b)"
-(*
-Null             ("\<^bold>0")
-           | Input n n P      ("_\<leftarrow>_._" 80)
-           | Lift n P         ("_\<triangleleft>_\<triangleright>" 80)
-           | Drop n           ("\<acute>_`" 80)
-           | Par P P          (infixl "\<parallel>" 75)   *)
+  | "((`(Input x y P)\<acute>) =N `Input p q Q\<acute>) = ((Input x y P)  =C (Input p q Q))"
+  | "((`(Input x y P)\<acute>) =N `Lift _ _\<acute>) = False"
+  | "((`(Input x y P)\<acute>) =N `Par _ _\<acute>) = False"
+  | "((`(Input x y P)\<acute>) =N zero) = False"
+  | "((`(Input x y P)\<acute>) =N `\<acute>a`\<acute>) = (`(Input x y P)\<acute> =N a)"
+
+  | "((`Lift x P\<acute>) =N `Lift y Q\<acute>) = (Lift x P =C Lift y Q)"
+  | "((`Lift x P\<acute>) =N `Input _ _ _\<acute>) = False"
+  | "((`Lift x P\<acute>) =N `Par _ _\<acute>) = False"
+  | "((`Lift x P\<acute>) =N zero) = False"
+  | "((`Lift x P\<acute>) =N `\<acute>a`\<acute>) = (`(Lift x P)\<acute> =N a)"
+
+  | "((`P\<parallel>Q\<acute>) =N (`A\<parallel>B\<acute>)) = ((P\<parallel>Q) =C (A\<parallel>B))"
+  | "((`P\<parallel>Q\<acute>) =N (`Lift _ _\<acute>)) = False"
+  | "((`P\<parallel>Q\<acute>) =N (`Input _ _ _\<acute>)) = False"
+  | "((`P\<parallel>Q\<acute>) =N zero) = ((P\<parallel>Q) =C Null)"
+  | "((`P\<parallel>Q\<acute>) =N (`\<acute>a`\<acute>)) = (`(P\<parallel>Q)\<acute> =N a)"
+
+  | "`\<acute>a`\<acute> =N `Input x y P\<acute> = (a =N `Input x y P\<acute>)"
+  | "`\<acute>a`\<acute> =N `Lift x P\<acute> = (a =N `Lift x P\<acute>)"
+  | "`\<acute>a`\<acute> =N `Par P Q\<acute> = (a =N `Par P Q\<acute>)"
+  | "`\<acute>a`\<acute> =N `\<acute>b`\<acute> = (a =N b)"
+  | "`\<acute>a`\<acute> =N zero = (a =N zero)"
+
 
 value "`\<acute>zero`\<acute> =N zero"
 value "`\<acute>`\<acute>zero`\<acute>`\<acute> =N zero"
@@ -374,23 +403,32 @@ apply auto
 proof -
   fix r
   show "r =N r"
-  apply (induction r rule: name_equivalence.induct)
-  apply auto
-  proof -
-    fix y
-    assume "y =N y"
-    show "y =N `\<acute>y`\<acute>"
-    apply (simp add: name_equivalence.simps())
-sorry
-(* 
+  using congruReflexive by (induction r rule: name_equivalence.induct, auto)
+qed
+
 theorem name_equivalence_symmetric:
-  shows "symmetricR name_equivalence"
-sorry
+  assumes "x =N y"
+  shows "y =N x"
+using assms congruSymmetric eqSymmetric by (induct x rule: name_equivalence.induct, auto)
 
 theorem name_equivalence_transitive:
-  shows "transitiveR name_equivalence"
+  assumes "a =N b" and "b =N c"
+  shows "a =N c"
+using assms apply (induct a b rule: name_equivalence.induct)
+apply auto
+using assms apply (induct c rule: name_equivalence.induct)
+apply auto
+proof -
+  fix P Q Pa Qa
+  assume "Pa =C Null" and "Qa =C Null" and "a =N b" and "b =N `P \<parallel> Q\<acute>"
+  show "P =C Null"
+  using assms apply (induction P, auto)
+  apply auto
+sledgehammer
+apply (simp add: assms eqTransitive)
+apply (simp add: assms congruTransitive eqTransitive)
 sorry
-*)
+
 
 value "`p \<parallel> (\<^bold>0 \<parallel> q)\<acute> =N `q \<parallel> p\<acute>"
 
