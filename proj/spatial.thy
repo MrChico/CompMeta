@@ -129,9 +129,9 @@ apply auto
 apply pat_completeness
 done
 termination
-(*apply (relation "measure (\<lambda>x.(sdepth x))")
+apply (relation "measure (\<lambda>x.(sdepth x))")
 apply auto
-proof -
+(*proof -
   fix P Q x
   assume "x\<in> set (getList P)"
   show "sdepth x < Suc (max (sdepth P) (sdepth Q))"
@@ -315,17 +315,37 @@ proof auto
 qed
 *)
 
+
+theorem congruReflexive:
+  shows "reflexive congru"
+sorry
+
 theorem congruTransitive:
   shows "transitive congru"
 sorry
-
 
 theorem congruSymmetric:
   shows "symmetric congru"
 sorry
 
+theorem eqReflexive:
+  shows "\<forall> a b. (eq2 a a [])"
+sorry
+
+theorem eqSymmetric:
+  shows "\<forall> a b. (eq2 a b [] \<longrightarrow> eq2 b a [])"
+sorry
+
+theorem eqTransitive:
+  shows "\<forall> a b c. (((eq2 a b []) \<and> (eq2 b c [])) \<longrightarrow> (eq2 a c []))"
+sorry
+
 theorem parAssoc:
   shows "((a\<parallel>b)\<parallel>c) =C (a\<parallel>(b\<parallel>c))"
+sorry
+
+theorem parKommutative:
+  shows "a\<parallel>b =C b\<parallel>a"
 sorry
 
 theorem zeroLeft:
@@ -335,6 +355,7 @@ sorry
 theorem zeroRight:
   shows "(a \<parallel> Null) =C a"
 sorry
+
 
 theorem someshit:
 shows "(((zero\<leftarrow>zero.\<^bold>0) \<parallel> \<^bold>0) \<parallel> (zero\<leftarrow>zero.\<^bold>0)) =C (((zero\<leftarrow>zero.\<^bold>0) \<parallel> (zero\<leftarrow>zero.\<^bold>0)) \<parallel> \<^bold>0)"
@@ -347,23 +368,36 @@ value "(((zero\<leftarrow>zero.\<^bold>0) \<parallel> \<^bold>0) \<parallel> (ze
 (*Name equivalence*)
 fun name_equivalence :: "n \<Rightarrow> n \<Rightarrow> bool" (infix "=N" 52)
   where 
-    "zero =N `y\<acute> = (Null =C y)"
-  | "`y\<acute> =N zero = (Null =C y)"
-  | "((` (Input x y P) \<acute>) =N `z\<acute>) = ((Input x y P)  =C z)"
-  | "(`z\<acute> =N (` (Input x y P) \<acute>)) = ((Input x y P)  =C z)"
-  | "((` P \<parallel> Q \<acute>) =N `z\<acute>) = ( P \<parallel> Q  =C z)"
-  | "( `z\<acute> =N(` P \<parallel> Q \<acute>)) = ( P \<parallel> Q  =C z)"
-  | "((` x\<triangleleft>P\<triangleright> \<acute>) =N `z\<acute>) = (x\<triangleleft>P \<triangleright> =C z)"
-  | "( `z\<acute> =N (` x\<triangleleft>P\<triangleright> \<acute>)) = (x\<triangleleft>P \<triangleright> =C z)"
+    "zero =N `Input x y P\<acute> = False"
+  | "zero =N `Lift _ _\<acute> = False"
+  | "zero =N `Par P Q\<acute> = (Null =C (P\<parallel>Q))"
+  | "zero =N `\<acute>a`\<acute> = (zero =N a)"
+  | "zero =N zero = True"
 
-  | "`\<acute>a`\<acute> =N b = (a =N b)"
-  | "a =N `\<acute>b`\<acute> = (a =N b)"
-(*
-Null             ("\<^bold>0")
-           | Input n n P      ("_\<leftarrow>_._" 80)
-           | Lift n P         ("_\<triangleleft>_\<triangleright>" 80)
-           | Drop n           ("\<acute>_`" 80)
-           | Par P P          (infixl "\<parallel>" 75)   *)
+  | "((`(Input x y P)\<acute>) =N `Input p q Q\<acute>) = ((Input x y P)  =C (Input p q Q))"
+  | "((`(Input x y P)\<acute>) =N `Lift _ _\<acute>) = False"
+  | "((`(Input x y P)\<acute>) =N `Par _ _\<acute>) = False"
+  | "((`(Input x y P)\<acute>) =N zero) = False"
+  | "((`(Input x y P)\<acute>) =N `\<acute>a`\<acute>) = (`(Input x y P)\<acute> =N a)"
+
+  | "((`Lift x P\<acute>) =N `Lift y Q\<acute>) = (Lift x P =C Lift y Q)"
+  | "((`Lift x P\<acute>) =N `Input _ _ _\<acute>) = False"
+  | "((`Lift x P\<acute>) =N `Par _ _\<acute>) = False"
+  | "((`Lift x P\<acute>) =N zero) = False"
+  | "((`Lift x P\<acute>) =N `\<acute>a`\<acute>) = (`(Lift x P)\<acute> =N a)"
+
+  | "((`P\<parallel>Q\<acute>) =N (`A\<parallel>B\<acute>)) = ((P\<parallel>Q) =C (A\<parallel>B))"
+  | "((`P\<parallel>Q\<acute>) =N (`Lift _ _\<acute>)) = False"
+  | "((`P\<parallel>Q\<acute>) =N (`Input _ _ _\<acute>)) = False"
+  | "((`P\<parallel>Q\<acute>) =N zero) = ((P\<parallel>Q) =C Null)"
+  | "((`P\<parallel>Q\<acute>) =N (`\<acute>a`\<acute>)) = (`(P\<parallel>Q)\<acute> =N a)"
+
+  | "`\<acute>a`\<acute> =N `Input x y P\<acute> = (a =N `Input x y P\<acute>)"
+  | "`\<acute>a`\<acute> =N `Lift x P\<acute> = (a =N `Lift x P\<acute>)"
+  | "`\<acute>a`\<acute> =N `Par P Q\<acute> = (a =N `Par P Q\<acute>)"
+  | "`\<acute>a`\<acute> =N `\<acute>b`\<acute> = (a =N b)"
+  | "`\<acute>a`\<acute> =N zero = (a =N zero)"
+
 
 value "`\<acute>zero`\<acute> =N zero"
 value "`\<acute>`\<acute>zero`\<acute>`\<acute> =N zero"
@@ -374,29 +408,33 @@ apply auto
 proof -
   fix r
   show "r =N r"
-  apply (induction r rule: name_equivalence.induct)
-  apply auto
-  proof -
-    fix y
-    assume "y =N y"
-    show "y =N `\<acute>y`\<acute>"
-    apply (simp add: name_equivalence.simps())
-sorry
-(* 
+  using congruReflexive by (induction r rule: name_equivalence.induct, auto)
+qed
+
 theorem name_equivalence_symmetric:
-  shows "symmetricR name_equivalence"
-sorry
+  assumes "x =N y"
+  shows "y =N x"
+using assms congruSymmetric eqSymmetric by (induct x rule: name_equivalence.induct, auto)
 
 theorem name_equivalence_transitive:
-  shows "transitiveR name_equivalence"
-sorry
+  assumes "a =N b" and "b =N c"
+  shows "a =N c"
+(* I dont know how to make an induction argument here which runs over all three variables *)
+(*
+using assms apply (induct a c rule: name_equivalence.induct)
+apply auto
+apply (simp add: assms congruTransitive eqTransitive)
 *)
+sorry
+
+
+
 
 value "`p \<parallel> (\<^bold>0 \<parallel> q)\<acute> =N `q \<parallel> p\<acute>"
 
-theorem testerr:
+theorem testNameEQ1:
   shows "`p \<parallel> (\<^bold>0 \<parallel> q)\<acute> =N `q \<parallel> p\<acute>"
-sorry
+using parKommutative by auto
 
 (*Gives the set of free names in a process*)
 fun free :: "P \<Rightarrow> n set" where
@@ -468,7 +506,7 @@ value "newName (Max ({(n_depth zero), 0::nat}))"
 abbreviation genz
   where "genz \<equiv> \<lambda> q::n.  \<lambda> p::n. \<lambda> R::P. newName (Max({(n_depth(q)), (P_depth(R)), (n_depth(p)) }))"
   
-
+(* syntactic substitution *)
 function s :: "P \<Rightarrow> n \<Rightarrow> n \<Rightarrow> P" ("(_) {_\<setminus>_}" 52)
 where "(\<^bold>0){_\<setminus>_}             = \<^bold>0"
    | "(R \<parallel> S){q\<setminus>p}          = ((R){q\<setminus>p}) \<parallel> ((S){q\<setminus>p})" 
@@ -477,7 +515,22 @@ where "(\<^bold>0){_\<setminus>_}             = \<^bold>0"
    | "(\<acute>x`){q\<setminus>p}            = (if (x =N p) then \<acute>q` else \<acute>x`)"
 apply pat_completeness by auto
 termination
-apply auto
+apply (relation "measure (\<lambda>(p,x,y). (P_depth p))", auto)
+
+(* see http://isabelle.in.tum.de/doc/functions.pdf *)
+  sorry (*induction measure on n_depth*)
+  
+(* semantic substitution *)
+function ss :: "P \<Rightarrow> n \<Rightarrow> n \<Rightarrow> P" ("(_) s{_\<setminus>_}" 52)
+where "(\<^bold>0)s{_\<setminus>_}             = \<^bold>0"
+   | "(R \<parallel> S)s{q\<setminus>p}          = ((R){q\<setminus>p}) \<parallel> ((S){q\<setminus>p})" 
+   | "( x \<leftarrow> y . R)s{q\<setminus>p}    = ((sn x q p) \<leftarrow> (genz q p R)  . ((R {(genz q p R)\<setminus>y}){q\<setminus>p}))"  
+   | "(x \<triangleleft> R \<triangleright>) s{q\<setminus>p}       = ((sn x q p) \<triangleleft>R{q\<setminus>p}\<triangleright>)"
+   | "(\<acute>x`)s{`q\<acute>\<setminus>p}            = (if (x =N p) then q else \<acute>x`)" (* semantic substitution *)
+apply pat_completeness by auto
+termination
+apply (relation "measure (\<lambda>(p,x,y). (P_depth p))", auto)
+
 (* see http://isabelle.in.tum.de/doc/functions.pdf *)
   sorry (*induction measure on n_depth*)
 
@@ -495,29 +548,28 @@ value "(zero\<triangleleft>zero[[`three\<acute>]]\<triangleright>{`two\<acute>\<
 value "zero[[`zero[[`three\<acute>]]\<acute>]]{`two\<acute>\<setminus>`three\<acute>}"
 value "zero[[`zero[[`three\<acute>]]\<acute>]]{`two\<acute>\<setminus>`three\<acute>} = (zero[[`zero[[`three\<acute>]]\<acute>]])"
 
-(*
-lemma "(zero\<triangleleft>zero[[`three\<acute>]]\<triangleright>{`two\<acute>\<setminus>`three\<acute>}) = (zero\<triangleleft>zero[[`two\<acute>]]\<triangleright>)"
-apply simp
-apply auto
-apply (simp add: numeral_3_eq_3)
-proof -
-  have 1:"\<not>(zero =N newName 3)" by (simp add: numeral_3_eq_3)
-  moreover have 2: "newName 3 =N `three\<acute>" by (simp add: numeral_3_eq_3)
-  moreover have 3: "\<not> newName 2 = newName 3" by (simp add: numeral_3_eq_3 numeral_2_eq_2)
+(* Operational Semantics *)
 
-how to prove this?
+fun toPar:: "P list \<Rightarrow> P" where
+  "toPar []   = Null"
+ |"toPar (x#[]) = x"
+ |"toPar (x#y#xs) = (x \<parallel> (toPar (y#xs)))"
+
+fun step:: "P \<Rightarrow> P" where
+  "step P = toPar (getList P)"
+
+(*
+fun fineRun:: "P list \<Rightarrow> P list \<Rightarrow> P list \<Rightarrow> P list" where
+   "fineRun []     []  []        = []"
+  |"fineRun (x#[]) []  []        = (x#[])"
+  |"fineRun (x#xs) (y#ys)  zs    = 
 *)
 
+abbreviation replication where "replication \<equiv> \<lambda>(P,x,y).(x\<triangleleft>((x)\<leftarrow>y.(x[[y]]\<parallel>\<acute>y`))\<parallel>P\<triangleright>\<parallel>(x \<leftarrow> y.(x[[y]]\<parallel>\<acute>y`)))"
 
-
-
-theorem testerrr:
-shows "(\<^bold>0 \<parallel> (\<acute>zero`)) { (newName 2) \<setminus> zero } = (\<^bold>0 \<parallel> (\<acute>(newName 2)`))"
-by simp
-
-(*theory is consistent, yay*)
 lemma False
 sledgehammer
+(*theory is consistent, yay*)
 oops
 
 end
