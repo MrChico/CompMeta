@@ -623,5 +623,4 @@ shows "zero \<leftarrow> zero . Zero \<equiv>\<alpha> one \<leftarrow> zero . Ze
 sorry
 *)
 
-
 end
