@@ -147,7 +147,6 @@ function alphaEq :: "P \<Rightarrow> P \<Rightarrow> bool" (infix "\<equiv>\<alp
     |"listEq (x#xs) (y#ys) zs = (if (x \<equiv>\<alpha> y) then (eq2 xs (zs@ys) []) else (eq2 (x#xs) ys (y#zs)))"
 by (auto, pat_completeness)
 termination
-sledgehammer
 sorry
  (*placeholder*) 
 
