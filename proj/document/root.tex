@@ -1,0 +1,77 @@
+
+
+
+
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+%\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap]{stmaryrd}
+  %for \<Sqinter>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+\usepackage{bookmark}
+\usepackage{proof}
+\usepackage{MnSymbol}
+\usepackage{hyperref}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{Investigations of Spatial Logic}
+\author{By Martin Lundfall, Denis Erfurt}
+\maketitle
+
+\begin{abstract}
+  This is a formalization of a reflective, higher order process calculus known as the
+  rho-calculus and its associated logic, namespace logic.
+  The calculus is described by Greg Meredith in detail in the following resources:\\
+  \begin{itemize}
+  \item \href{http://www.lshift.net/downloads/ex_nihilo_logic.pdf}{Namespace Logic}
+  \item \href{https://arxiv.org/pdf/1307.7766v2.pdf}{Policy as Types}
+  \end{itemize}
+\end{abstract}
+\newpage
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+%\bibliographystyle{abbrv}
+%\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

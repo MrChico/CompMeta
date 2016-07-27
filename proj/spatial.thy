@@ -28,11 +28,38 @@ abbreviation Output :: "n \<Rightarrow> n \<Rightarrow> P" ("_[[_]]")
   where "Output x y \<equiv> x\<triangleleft>\<acute>y`\<triangleright>"
 
 value "a[[b]]"
+value "zero \<leftarrow> zero.\<^bold>0"
+value "\<^bold>0\<parallel>\<^bold>0"
+value "\<acute>zero`"
+value "zero\<triangleleft>\<^bold>0\<triangleright>"
+value "(c\<leftarrow>d.(e))"
 
+
+fun newName :: "nat \<Rightarrow> n"
+  where "newName 0 = `\<^bold>0\<acute>"
+       |"newName (Suc n) = `(Output (newName n) (newName n))\<acute>"
 
 abbreviation zero :: n
   where "zero \<equiv> `\<^bold>0\<acute>"
+abbreviation one :: n
+  where "one \<equiv> newName 1"
+abbreviation two :: n
+  where "two \<equiv> newName 2"
+abbreviation three :: n
+  where "three \<equiv> newName 3"
+abbreviation four :: n
+  where "four \<equiv> newName 4"
 
+abbreviation Zero :: P
+  where "Zero \<equiv> Null"
+abbreviation One :: P
+  where "One \<equiv> \<acute>one`"
+abbreviation Two :: P
+  where "Two \<equiv> \<acute>two`"
+abbreviation Three :: P
+  where "Three \<equiv> \<acute>three`"
+abbreviation Four :: P
+  where "Four \<equiv> \<acute>four`" 
 
 value "zero \<leftarrow> zero.\<^bold>0."
 value "\<^bold>0\<parallel>\<^bold>0"
@@ -400,6 +427,10 @@ fun name_equivalence :: "n \<Rightarrow> n \<Rightarrow> bool" (infix "=N" 52)
 
 value "`\<acute>zero`\<acute> =N zero"
 value "`\<acute>`\<acute>zero`\<acute>`\<acute> =N zero"
+value "newName 3 =N three"
+value "newName 3 =N zero"
+value "three =N newName 3"
+value "`((One\<parallel>Two)\<parallel>(Three\<parallel>Four))\<parallel>Null\<acute> =N `((One\<parallel>Three)\<parallel>(Two\<parallel>Four))\<acute>"
 
 theorem name_equivalence_reflexive:
   shows "reflexive name_equivalence"
@@ -468,31 +499,10 @@ termination
 
 value "P_depth (\<acute>zero`)"
 
-fun newName :: "nat \<Rightarrow> n"
-  where "newName 0 = `\<^bold>0\<acute>"
-       |"newName (Suc n) = `(Output (newName n) (newName n))\<acute>"
-
-abbreviation one :: P
-  where "one \<equiv> \<acute>newName 1`"
-abbreviation two :: P
-  where "two \<equiv> \<acute>newName 2`"
-abbreviation three :: P
-  where "three \<equiv> \<acute>newName 3`"
-abbreviation fore :: P
-  where "fore \<equiv> \<acute>newName 4`"
-
-value "three"
-value "newName 3"
-value "`three\<acute>"
-value "newName 3 =N (`three\<acute>)"
-value "newName 3 =N zero"
-value "(`three\<acute>) =N newName 3"
-
-
-value "`((one\<parallel>two)\<parallel>(three\<parallel>fore))\<parallel>Null\<acute> =N `((one\<parallel>three)\<parallel>(two\<parallel>fore))\<acute>"
 
 (*substitution*)
 (*Takes a process, specifies the names to be substituted and returns a process*)
+
 abbreviation sn :: "n \<Rightarrow> n \<Rightarrow> n \<Rightarrow> n" where
   "sn x q p \<equiv> (if (x =N p) then q else x)" 
 
@@ -532,18 +542,18 @@ apply (relation "measure (\<lambda>(p,x,y). (P_depth p))", auto)
   sorry (*induction measure on n_depth*)
 
 value "\<^bold>0{zero\<setminus>zero}"
-value "\<acute>zero` {`two\<acute>\<setminus> zero}"
+value "(zero \<leftarrow> zero . Zero){two \<setminus> zero}"
 value "(\<^bold>0 \<parallel> (\<acute>zero`)) { (newName 2) \<setminus> zero }"
 
 (*
  2.6 Dynamic quote: an example
 *)
 
-value "zero\<triangleleft>zero[[`three\<acute>]]\<triangleright>{`two\<acute>\<setminus>`three\<acute>}"
-value "(zero\<triangleleft>zero[[`three\<acute>]]\<triangleright>{`two\<acute>\<setminus>`three\<acute>}) = (zero\<triangleleft>zero[[`two\<acute>]]\<triangleright>)"
+value "zero\<triangleleft>zero[[three]]\<triangleright>{two\<setminus>three}"
+value "(zero\<triangleleft>zero[[three]]\<triangleright>{two\<setminus>three}) = (zero\<triangleleft>zero[[two]]\<triangleright>)"
 
-value "zero[[`zero[[`three\<acute>]]\<acute>]]{`two\<acute>\<setminus>`three\<acute>}"
-value "zero[[`zero[[`three\<acute>]]\<acute>]]{`two\<acute>\<setminus>`three\<acute>} = (zero[[`zero[[`three\<acute>]]\<acute>]])"
+value "zero[[`zero[[three]]\<acute>]]{two\<setminus>three}"
+value "zero[[`zero[[three]]\<acute>]]{two\<setminus>three} = (zero[[`zero[[three]]\<acute>]])"
 
 (* Operational Semantics *)
 
@@ -609,7 +619,7 @@ following terms to be alpha-equal: \<close>
 
 (*
 theorem alphaEq: 
-shows "\<^bold>0 \<leftarrow> \<^bold>0. P =\<alpha> one \<leftarrow> \<^bold>0. P"
+shows "zero \<leftarrow> zero . Zero \<equiv>\<alpha> one \<leftarrow> zero . Zero"
 sorry
 *)
 
