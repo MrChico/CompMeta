@@ -12,7 +12,7 @@ datatype F = true
   | negation F ("\<not>_")
   | conjunction F F ("_\<^bold>&_" 80)
   | separation F F ("_\<^bold>\<parallel>_" 80)
-  | disclosure a ("\<section>\<acute>_`" 80)
+  | disclosure n ("\<section>\<acute>_`" 80)
   | dissemination a F ("_!(_)" 80)
   | reception a n F ("\<langle>_?_\<rangle>" 80)
   | greatestFixPoint F F ("rec_._" 80)
@@ -52,4 +52,12 @@ fun evalF :: "P set \<Rightarrow> F \<Rightarrow> P set"
     {P | P Q x y z c. (P \<equiv>\<alpha> (y\<leftarrow>x. Q.)) \<and> (Q{z\<setminus>y} \<in> {R{c\<setminus>b} | R. R \<in> (evalF A \<phi>)})
     \<and> (P \<in> A) \<and> (y \<in> toNames A) \<and> (c \<in> toNames A) \<and> (z \<in> toNames A)}"
     | "evalF A (quantification a \<phi> F) = {P{x\<setminus>a} | P x. (x \<in> (evalA (toNames A) \<section>`\<phi>\<acute>)) \<and> (P \<in> A)}" 
+
+subsection\<open>Example\<close>
+text\<open>A process witnessing the following formula satisfies the condition that it does not take input
+on any other name than 'one':\<close>
+
+abbreviation onlyOne :: "F" where "onlyOne \<equiv> (\<section>` \<section>\<acute>one`  \<acute>)"
+abbreviation onlyOnOne :: "F" where "onlyOnOne \<equiv> ((\<langle>  (\<section>` \<section>\<acute>one`  \<acute>) ? b \<rangle>) true)  & (\<not>\<langle>(\<not>\<section>\<acute>one`)? b \<rangle>true)"
+
 end
