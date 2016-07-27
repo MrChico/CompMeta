@@ -109,27 +109,43 @@ the bound variables are the names to which we bind input values.\<close>
 function alphaEq :: "P \<Rightarrow> P \<Rightarrow> bool" (infix "\<equiv>\<alpha>" 52)
   and listEq :: "P list \<Rightarrow> P list \<Rightarrow> P list \<Rightarrow> bool"
   where "Null \<equiv>\<alpha> Null = True"
+    (*The interesting cases are the ones relating to the bound variable of input*)
     | "((a\<leftarrow>b. P.) \<equiv>\<alpha> (c\<leftarrow>d. Q.)) =  ((b =N d) \<and> (P \<equiv>\<alpha> (Q{a\<setminus>c})))"
     | "(a\<leftarrow>b. P.) \<equiv>\<alpha> Q\<parallel>R = (listEq (getList (Q\<parallel>R)) ((a\<leftarrow>b.(P).)#[]) [])"
     | "Q\<parallel>R \<equiv>\<alpha> (a\<leftarrow>b. P.) = (listEq (getList (Q\<parallel>R)) ((a\<leftarrow>b.(P).)#[]) [])"
+    (*What follows is analoguous to the procedure of structural equality*)
     | "P\<parallel>Q \<equiv>\<alpha> R\<parallel>S = (listEq (getList (P\<parallel>Q)) (getList (R\<parallel>S)) [])"
-    | "(P \<equiv>\<alpha> Q) = (P =C Q)"(*
-    | "((a\<leftarrow>b. P.) \<equiv>\<alpha> _) =  False"
-    | "_ \<equiv>\<alpha> (a\<leftarrow>b. P.) =  False"
-    | "(x \<triangleleft> P \<triangleright>) \<equiv>\<alpha> Q = ((x \<triangleleft> P \<triangleright>) =C Q)"
-    | "Q \<equiv>\<alpha> (x \<triangleleft> P \<triangleright>) = ((x \<triangleleft> P \<triangleright>) =C Q)"
-    | "(\<acute>n` \<equiv>\<alpha> P) = (\<acute>n` =C P)"
-    | "(P \<equiv>\<alpha> \<acute>n`) = (\<acute>n` =C P)"
-    | "(P\<parallel>Q \<equiv>\<alpha> R) = ((P =C Null \<and> Q \<equiv>\<alpha> R) \<or> (Q =C Null \<and> P \<equiv>\<alpha> R))"*)
-
+    |"(x\<triangleleft>a\<triangleright>) \<equiv>\<alpha> (y\<triangleleft>b\<triangleright>)     = ((a =C b) \<and> (x =N y))"
+    |"(\<acute>a`) \<equiv>\<alpha> (\<acute>b`)       = (a =N b)"
+    |"(a\<parallel>b) \<equiv>\<alpha> Null        = ((a =C Null)\<and>(b =C Null))"
+    |"Null \<equiv>\<alpha> (a\<parallel>b)        = ((a =C Null)\<and>(b =C Null))"
+    |"(a\<parallel>b) \<equiv>\<alpha> (c\<leftarrow>d.(e).)  = (listEq (getList (a\<parallel>b)) ((c\<leftarrow>d.(e).)#[]) [])"
+    |"(c\<leftarrow>d.(e).) \<equiv>\<alpha> (a\<parallel>b)  = (listEq (getList (a\<parallel>b)) ((c\<leftarrow>d.(e).)#[]) [])"
+    |"(a\<parallel>b) \<equiv>\<alpha> (c\<triangleleft>d\<triangleright>)      = (listEq (getList (a\<parallel>b)) ((c\<triangleleft>d\<triangleright>)#[]) [])"
+    |"(c\<triangleleft>d\<triangleright>) \<equiv>\<alpha> (a\<parallel>b)      = (listEq (getList (a\<parallel>b)) ((c\<triangleleft>d\<triangleright>)#[]) [])"
+    |"(a\<parallel>b) \<equiv>\<alpha> (\<acute>c`)       = (listEq (getList (a\<parallel>b)) ((\<acute>c`)#[]) [])"
+    |"(\<acute>c`) \<equiv>\<alpha> (a\<parallel>b)       = (listEq (getList (a\<parallel>b)) ((\<acute>c`)#[]) [])"
+    (*Uninteresting remaining cases*)
+    |"(\<acute>a`) \<equiv>\<alpha> Null        = False"
+    |"Null \<equiv>\<alpha> (\<acute>b`)        = False"
+    |"(\<acute>a`) \<equiv>\<alpha> (_\<leftarrow>_._.)    = False"
+    |"(_\<leftarrow>_._.) \<equiv>\<alpha> (\<acute>b`)    = False"
+    |"(\<acute>a`)\<equiv>\<alpha> (_\<triangleleft>_\<triangleright>)      = False"
+    |"(_\<triangleleft>_\<triangleright>)\<equiv>\<alpha> (\<acute>b`)      = False"
+    |"(_\<triangleleft>_\<triangleright>)\<equiv>\<alpha> Null       = False"
+    |"Null \<equiv>\<alpha>(_\<triangleleft>_\<triangleright>)       = False"
+    |"(_\<triangleleft>_\<triangleright>)\<equiv>\<alpha> (_\<leftarrow>_._.)   = False"
+    |"(_\<leftarrow>_._.)\<equiv>\<alpha> (_\<triangleleft>_\<triangleright>)   = False"
+    |"(_\<leftarrow>_._.)\<equiv>\<alpha> Null     = False"
+    |"Null \<equiv>\<alpha> (_\<leftarrow>_._.)     = False"
+    
     |"listEq [] [] [] = True"
     |"listEq (x#xs) [] [] = False"
     |"listEq [] [] (a#as) = False"
     |"listEq (x#xs) [] (b#bs) = False"
     |"listEq [] (b#bs) _ = False"
     |"listEq (x#xs) (y#ys) zs = (if (x \<equiv>\<alpha> y) then (eq2 xs (zs@ys) []) else (eq2 (x#xs) ys (y#zs)))"
-apply (auto, pat_completeness)
-sorry
+by (auto, pat_completeness)
 termination
 sorry
  (*placeholder*) 

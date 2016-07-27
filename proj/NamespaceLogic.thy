@@ -30,7 +30,10 @@ abbreviation toNames :: "P set \<Rightarrow> n set"
 
 abbreviation toProc :: "n set \<Rightarrow> P set"
   where "toProc A \<equiv> {\<acute>x` | x. x \<in> A}"
-
+(*
+fun valuation :: "F \<Rightarrow> a \<Rightarrow> a \<Rightarrow> F"
+  where "valuation F a b \<equiv> if (a)"
+*)
 (*Evaluate formulae by checking which processes witness them
 WIP*)
 fun evalF :: "P set \<Rightarrow> F \<Rightarrow> P set"
@@ -42,8 +45,11 @@ fun evalF :: "P set \<Rightarrow> F \<Rightarrow> P set"
     | "evalF A (\<phi> \<^bold>\<parallel> \<psi>) = {p\<parallel>q | p q. p\<parallel>q \<in> A \<and> (
                       (p \<in> (evalF A \<phi>) \<and> q \<in> (evalF A \<psi>))
                     \<or> (p \<in> (evalF A \<psi>) \<and> q \<in> (evalF A \<psi>)))}"
-    | "evalF A (disclosure a) = {P | P x. (P \<equiv>\<alpha> \<acute>x`) \<and> P \<in> A \<and> x \<in> (evalA (toNames A) a)}" 
-    | "evalF A (dissemination a P) = {P | P Q x. (P \<equiv>\<alpha> (x\<triangleleft>Q\<triangleright>)) \<and> (P \<in> A) \<and> (Q \<in> A) \<and> (x \<in> evalA (toNames A) a)}"
+    | "evalF A (disclosure a) = {P | P x. ((P \<equiv>\<alpha> \<acute>x`) \<and> (P \<in> A) \<and> (x \<in> (evalA (toNames A) a)))}" 
+    | "evalF A (dissemination a P) = {P | P Q x. (P \<equiv>\<alpha> (x\<triangleleft>Q\<triangleright>)) \<and> (P \<in> A) \<and> (Q \<in> A) \<and> (x \<in> (evalA (toNames A) a))}"
+    | "evalF A (reception a b P) = 
+    {P | P Q x y c. (P \<equiv>\<alpha> (y\<leftarrow>x. Q.)) \<and> (Q{z\<setminus>y} \<in> {R{c\<setminus>b} | R. R \<in> evalF A P})
+    \<and> (P \<in> A) \<and> (y \<in> toNames A) \<and> (c \<in> toNames A)}"
+    | "evalF A (quantification a \<phi> F) = {P{x\<setminus>a} | P x. (x \<in> (evalA (toNames N) `\<phi>\<acute>)) \<and> (P \<in> A)}" 
     | "evalA N `\<phi>\<acute> = {x | x P. (x =N `P\<acute>) \<and> (P \<in> (evalF (toProc N) \<phi>)) \<and> (x \<in> N)}"
-    
 end
