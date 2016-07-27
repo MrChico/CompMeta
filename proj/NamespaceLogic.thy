@@ -15,7 +15,7 @@ datatype F = true
   | disclosure n ("\<section>\<acute>_`" 80)
   | dissemination a F ("_!(_)" 80)
   | reception a n F ("\<langle>_?_\<rangle>" 80)
-  | greatestFixPoint F F ("rec _._" 80)
+ (* | greatestFixPoint F F ("rec _._" 80)*)
   | quantification n F F ("\<forall>_:_._")
   and a = indication F ("\<section>`_\<acute>")
   | name n
@@ -36,11 +36,11 @@ fun valuation :: "F \<Rightarrow> a \<Rightarrow> a \<Rightarrow> F"
 *)
 (*Evaluate formulae by checking which processes witness them
 WIP*)
-fun evalF :: "P set \<Rightarrow> F \<Rightarrow> P set"
+function evalF :: "P set \<Rightarrow> F \<Rightarrow> P set"
   and evalA :: "n set \<Rightarrow> a \<Rightarrow> n set"
   where "evalF A true = A"
     | "evalA N \<section>`\<phi>\<acute> = {x | x P. (x =N `P\<acute>) \<and> (P \<in> (evalF (toProc N) \<phi>)) \<and> (x \<in> N)}"
-    | "evalA N (name `P\<acute>) = {x | x. (x =N `P\<acute>) \<and> (x \<in> N)}"
+    | "evalA N (name `P\<acute>) = {x. (x \<in> N) \<and> (x =N `P\<acute>)}"
     | "evalF _ false = {Null}"
     | "evalF A (negation \<phi>) = A - (evalF A \<phi>)"
     | "evalF A (\<phi> \<^bold>& \<psi>) = evalF A \<phi> \<inter> evalF A \<psi>"
@@ -53,13 +53,21 @@ fun evalF :: "P set \<Rightarrow> F \<Rightarrow> P set"
     {P | P Q x y z c. (P \<equiv>\<alpha> (y\<leftarrow>x. Q.)) \<and> (Q{z\<setminus>y} \<in> {R{c\<setminus>b} | R. R \<in> (evalF A \<phi>)})
     \<and> (P \<in> A) \<and> (y \<in> toNames A) \<and> (c \<in> toNames A) \<and> (z \<in> toNames A)}"
     | "evalF A (quantification a \<phi> F) = {P{x\<setminus>a} | P x. (x \<in> (evalA (toNames A) \<section>`\<phi>\<acute>)) \<and> (P \<in> A)}" 
-    | "evalF A (rec X. \<phi>) = undefined"
+(*    | "evalF A (rec X. \<phi>) = undefined"*)
+apply pat_completeness
+by auto
+termination
+sorry
 
 subsection\<open>Example\<close>
 text\<open>A process witnessing the following formula satisfies the condition that it does not take input
 on any other name than 'one':\<close>
 
-abbreviation onlyOne :: "F" where "onlyOne \<equiv> (\<section>` \<section>\<acute>one`  \<acute>)"
+abbreviation oneA :: "a" where "oneA \<equiv> name one"
+abbreviation onlyOne :: "a" where "onlyOne \<equiv> (\<section>` (\<section>\<acute>one`)  \<acute>)"
+
+value "evalA {zero, one, two} oneA"
+value "evalA {zero, one, two} onlyOne" 
 abbreviation onlyOnOne :: "F" where "onlyOnOne \<equiv> ((\<langle>  (\<section>` \<section>\<acute>one`  \<acute>) ? b \<rangle>) true)  & (\<not>\<langle>(\<not>\<section>\<acute>one`)? b \<rangle>true)"
 
 end
