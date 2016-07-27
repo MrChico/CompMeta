@@ -1,0 +1,13 @@
+session "proj" = "HOL" +
+  options [document = pdf, document_output = "output"]
+  theories [document = false]
+    (* Foo *)
+    (* Bar *)
+  theories [quick_and_dirty]
+    RhoCalc 
+    NameEquiv
+    Substitution
+    Dynamics 
+    NamespaceLogic
+  document_files
+    "root.tex"
