@@ -607,8 +607,11 @@ text\<open>Alpha equivalence equates processes that only differ by their bound v
 the bound variables are the names to which we bound input values. As an example we would want the 
 following terms to be alpha-equal: \<close>
 
+(*
 theorem alphaEq: 
-shows "\<^bold>0 \<leftarrow> \<^bold>0. P \<equiv>\<alpha> one \<leftarrow> \<^bold>0. P"
+shows "\<^bold>0 \<leftarrow> \<^bold>0. P =\<alpha> one \<leftarrow> \<^bold>0. P"
 sorry
+*)
+
 
 end
