@@ -102,18 +102,42 @@ value "zero[[`zero[[three]]\<acute>]]{two\<setminus>three} = (zero[[`zero[[three
 
 section\<open>Alpha equivalence\<close>
 text\<open>Alpha equivalence equates processes that only differ by their bound variables. In our calculus,
-the bound variables are the names to which we bound input values. As an example we would want the 
-following terms to be alpha-equal: \<close>
+the bound variables are the names to which we bind input values.\<close>
 
 (*Bound variable names do not matter under \<alpha>-equivalence
   WIP*)
-fun alphaEq :: "P \<Rightarrow> P \<Rightarrow> bool" (infix "\<equiv>\<alpha>" 52)
-  where "Null \<equiv>\<alpha> P = (Null =C P)"
+function alphaEq :: "P \<Rightarrow> P \<Rightarrow> bool" (infix "\<equiv>\<alpha>" 52)
+  and listEq :: "P list \<Rightarrow> P list \<Rightarrow> P list \<Rightarrow> bool"
+  where "Null \<equiv>\<alpha> Null = True"
     | "((a\<leftarrow>b. P.) \<equiv>\<alpha> (c\<leftarrow>d. Q.)) =  ((b =N d) \<and> (P \<equiv>\<alpha> (Q{a\<setminus>c})))"
-    | "_ \<equiv>\<alpha> _ = True" (*placeholder*) 
+    | "(a\<leftarrow>b. P.) \<equiv>\<alpha> Q\<parallel>R = (listEq (getList (Q\<parallel>R)) ((a\<leftarrow>b.(P).)#[]) [])"
+    | "Q\<parallel>R \<equiv>\<alpha> (a\<leftarrow>b. P.) = (listEq (getList (Q\<parallel>R)) ((a\<leftarrow>b.(P).)#[]) [])"
+    | "P\<parallel>Q \<equiv>\<alpha> R\<parallel>S = (listEq (getList (P\<parallel>Q)) (getList (R\<parallel>S)) [])"
+    | "(P \<equiv>\<alpha> Q) = (P =C Q)"(*
+    | "((a\<leftarrow>b. P.) \<equiv>\<alpha> _) =  False"
+    | "_ \<equiv>\<alpha> (a\<leftarrow>b. P.) =  False"
+    | "(x \<triangleleft> P \<triangleright>) \<equiv>\<alpha> Q = ((x \<triangleleft> P \<triangleright>) =C Q)"
+    | "Q \<equiv>\<alpha> (x \<triangleleft> P \<triangleright>) = ((x \<triangleleft> P \<triangleright>) =C Q)"
+    | "(\<acute>n` \<equiv>\<alpha> P) = (\<acute>n` =C P)"
+    | "(P \<equiv>\<alpha> \<acute>n`) = (\<acute>n` =C P)"
+    | "(P\<parallel>Q \<equiv>\<alpha> R) = ((P =C Null \<and> Q \<equiv>\<alpha> R) \<or> (Q =C Null \<and> P \<equiv>\<alpha> R))"*)
 
-theorem alphaEq: 
-shows "zero \<leftarrow> zero . Zero. \<equiv>\<alpha> one \<leftarrow> zero . Zero."
+    |"listEq [] [] [] = True"
+    |"listEq (x#xs) [] [] = False"
+    |"listEq [] [] (a#as) = False"
+    |"listEq (x#xs) [] (b#bs) = False"
+    |"listEq [] (b#bs) _ = False"
+    |"listEq (x#xs) (y#ys) zs = (if (x \<equiv>\<alpha> y) then (eq2 xs (zs@ys) []) else (eq2 (x#xs) ys (y#zs)))"
+apply (auto, pat_completeness)
 sorry
+termination
+sorry
+ (*placeholder*) 
+
+text\<open> As an example, the 
+following terms are alpha-equal: \<close>
+value "(zero \<leftarrow> zero . Zero.) \<equiv>\<alpha> (one \<leftarrow> zero . Zero.)"
+value "(Zero \<parallel> (zero \<leftarrow> zero . Zero.)) \<equiv>\<alpha> (one \<leftarrow> zero . Zero. \<parallel> Zero)"
+value "(zero \<leftarrow> zero . (zero \<triangleleft> Zero \<triangleright>).) \<equiv>\<alpha> (one \<leftarrow> zero . one \<triangleleft> Zero \<parallel> Zero \<triangleright>.)"
 
 end
