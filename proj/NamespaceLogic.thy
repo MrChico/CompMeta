@@ -15,10 +15,10 @@ datatype F = true
   | disclosure n ("\<section>\<acute>_`" 80)
   | dissemination a F ("_!(_)" 80)
   | reception a n F ("\<langle>_?_\<rangle>" 80)
-  | greatestFixPoint F F ("rec_._" 80)
+  | greatestFixPoint F F ("rec _._" 80)
   | quantification n F F ("\<forall>_:_._")
   and a = indication F ("\<section>`_\<acute>")
-  | n
+  | name n
 
 section\<open>Semantics\<close>
 text\<open>Instead of evaluating formulae to truth values, we ask for which processes or names 
@@ -40,18 +40,20 @@ fun evalF :: "P set \<Rightarrow> F \<Rightarrow> P set"
   and evalA :: "n set \<Rightarrow> a \<Rightarrow> n set"
   where "evalF A true = A"
     | "evalA N \<section>`\<phi>\<acute> = {x | x P. (x =N `P\<acute>) \<and> (P \<in> (evalF (toProc N) \<phi>)) \<and> (x \<in> N)}"
+    | "evalA N (name `P\<acute>) = {x | x. (x =N `P\<acute>) \<and> (x \<in> N)}"
     | "evalF _ false = {Null}"
     | "evalF A (negation \<phi>) = A - (evalF A \<phi>)"
     | "evalF A (\<phi> \<^bold>& \<psi>) = evalF A \<phi> \<inter> evalF A \<psi>"
     | "evalF A (\<phi> \<^bold>\<parallel> \<psi>) = {p\<parallel>q | p q. p\<parallel>q \<in> A \<and> (
                       (p \<in> (evalF A \<phi>) \<and> q \<in> (evalF A \<psi>))
                     \<or> (p \<in> (evalF A \<psi>) \<and> q \<in> (evalF A \<psi>)))}"
-    | "evalF A (disclosure a) = {P | P x. ((P \<equiv>\<alpha> \<acute>x`) \<and> (P \<in> A) \<and> (x \<in> (evalA (toNames A) a)))}" 
+    | "evalF A (disclosure a) = {P | P x. ((P \<equiv>\<alpha> \<acute>x`) \<and> (P \<in> A) \<and> (x \<in> (evalA (toNames A) (name a))))}" 
     | "evalF A (dissemination a P) = {P | P Q x. (P \<equiv>\<alpha> (x\<triangleleft>Q\<triangleright>)) \<and> (P \<in> A) \<and> (Q \<in> A) \<and> (x \<in> (evalA (toNames A) a))}"
     | "evalF A (reception a b \<phi>) = 
     {P | P Q x y z c. (P \<equiv>\<alpha> (y\<leftarrow>x. Q.)) \<and> (Q{z\<setminus>y} \<in> {R{c\<setminus>b} | R. R \<in> (evalF A \<phi>)})
     \<and> (P \<in> A) \<and> (y \<in> toNames A) \<and> (c \<in> toNames A) \<and> (z \<in> toNames A)}"
     | "evalF A (quantification a \<phi> F) = {P{x\<setminus>a} | P x. (x \<in> (evalA (toNames A) \<section>`\<phi>\<acute>)) \<and> (P \<in> A)}" 
+    | "evalF A (rec X. \<phi>) = undefined"
 
 subsection\<open>Example\<close>
 text\<open>A process witnessing the following formula satisfies the condition that it does not take input
