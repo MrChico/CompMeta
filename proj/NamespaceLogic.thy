@@ -9,7 +9,7 @@ lifetime. Since names are simply quoted processes, this logic is called namespac
 We begin by the datatype of the constructible formulae of namespace logic:\<close>
 datatype F = true
   | false
-  | negation F ("\<not>_")
+  | negation F ("\<^bold>\<not>_")
   | conjunction F F ("_\<^bold>&_" 80)
   | separation F F ("_\<^bold>\<parallel>_" 80)
   | disclosure n ("\<section>\<acute>_`" 80)
@@ -36,6 +36,43 @@ fun valuation :: "F \<Rightarrow> a \<Rightarrow> a \<Rightarrow> F"
 *)
 (*Evaluate formulae by checking which processes witness them
 WIP*)
+(*In this approach evalF serves as the characteristic function
+for the set of processes that satisfy a certain formula F*)
+function evalF :: "P \<Rightarrow> F \<Rightarrow> bool"
+  and evalA :: "n \<Rightarrow> a \<Rightarrow> bool"
+  where "evalF p true = True"
+    | "evalF _ false = False"
+    | "evalF p (\<^bold>\<not> \<phi>) = (\<not>(evalF p \<phi>))"
+    | "evalA `P\<acute> \<section>`\<phi>\<acute> = (evalF P \<phi>)" (*almost this, should be P up to name equality*)
+    | "evalA n (name `P\<acute>) = n =N `P\<acute>"
+    | "evalF p (\<phi> \<^bold>& \<psi>) = (evalF p \<phi> \<and> evalF p \<psi>)"
+    | "evalF (P\<parallel>Q) (\<phi> \<^bold>\<parallel> \<psi>) = (((evalF P \<phi>) \<and> (evalF Q \<psi>)) \<or>
+    ((evalF Q \<phi>) \<and> (evalF P \<psi>)))"
+    (*false for all other cases*)
+    | "evalF Null (\<phi> \<^bold>\<parallel> \<psi>) = False"
+    | "evalF (x \<leftarrow> y . P .)  (\<phi> \<^bold>\<parallel> \<psi>) = False"
+    | "evalF (x\<triangleleft>P\<triangleright>) (\<phi> \<^bold>\<parallel> \<psi>) = False"
+    | "evalF (\<acute>n`) (\<phi> \<^bold>\<parallel> \<psi>) = False"
+    | "evalF p (disclosure a) = (evalA `p\<acute> (name a))" (*Again, almost. Should be up to \<alpha>-equivalence*)
+    | "evalF (x\<triangleleft>P\<triangleright>) (dissemination a \<phi>) = ((evalA x a) \<and> (evalF P \<phi>))"
+    (*remaining cases false*)
+    | "evalF Null (dissemination a \<phi>) = False"
+    | "evalF (x\<leftarrow>y. P .) (dissemination a \<phi>) = False"
+    | "evalF (\<acute>`P\<acute>`) (dissemination a \<phi>) = evalF P (dissemination a \<phi>)"
+    | "evalF (P\<parallel>Q) (dissemination a \<phi>) = ((evalF P (dissemination a \<phi>) \<and> (Q =C Null))
+    \<or> (evalF Q (dissemination a \<phi>) \<and> (P =C Null)))"
+    (*The last cases are difficult, because we have to define that substitution on formulae*)
+(*    | "evalF (x\<leftarrow>y . P.) (reception a b \<phi>) = (evalF P \<phi>)"
+    {P | P Q x y z c. (P \<equiv>\<alpha> (y\<leftarrow>x. Q.)) \<and> (Q{z\<setminus>y} \<in> {R{c\<setminus>b} | R. R \<in> (evalF A \<phi>)})
+    \<and> (P \<in> A) \<and> (y \<in> toNames A) \<and> (c \<in> toNames A) \<and> (z \<in> toNames A)}"
+   (* | "evalF A (quantification a \<phi> F) = {P{x\<setminus>a} | P x. (x \<in> (evalA (toNames A) \<section>`\<phi>\<acute>)) \<and> (P \<in> A)}" 
+    | "evalF A (rec X. \<phi>) = undefined"*)
+apply pat_completeness
+by auto
+termination
+sorry
+*)
+(*
 function evalF :: "P set \<Rightarrow> F \<Rightarrow> P set"
   and evalA :: "n set \<Rightarrow> a \<Rightarrow> n set"
   where "evalF A true = A"
@@ -58,7 +95,7 @@ apply pat_completeness
 by auto
 termination
 sorry
-
+*)
 subsection\<open>Example\<close>
 text\<open>A process witnessing the following formula satisfies the condition that it does not take input
 on any other name than 'one':\<close>
