@@ -39,8 +39,8 @@ WIP*)
 fun evalF :: "P set \<Rightarrow> F \<Rightarrow> P set"
   and evalA :: "n set \<Rightarrow> a \<Rightarrow> n set"
   where "evalF A true = A"
-    | "evalA N \<section>`\<phi>\<acute> = {x | x P. (x =N `P\<acute>) \<and> (P \<in> (evalF (toProc N) \<phi>)) \<and> (x \<in> N)}"
-    | "evalA N (name `P\<acute>) = {x | x. (x =N `P\<acute>) \<and> (x \<in> N)}"
+    | "evalA N (name `P\<acute>) = (\<lambda>N.{x. x \<in> N})(N)"
+    | "evalA N (indication \<phi>) = {x | x P. (x =N `P\<acute>) \<and> (P \<in> N) \<and> (x \<in> N)}" (* (evalF (toProc N) \<phi>) *)
     | "evalF _ false = {Null}"
     | "evalF A (negation \<phi>) = A - (evalF A \<phi>)"
     | "evalF A (\<phi> \<^bold>& \<psi>) = evalF A \<phi> \<inter> evalF A \<psi>"
@@ -54,4 +54,20 @@ fun evalF :: "P set \<Rightarrow> F \<Rightarrow> P set"
     \<and> (P \<in> A) \<and> (y \<in> toNames A) \<and> (c \<in> toNames A) \<and> (z \<in> toNames A)}"
     | "evalF A (quantification a \<phi> F) = {P{x\<setminus>a} | P x. (x \<in> (evalA (toNames A) \<section>`\<phi>\<acute>)) \<and> (P \<in> A)}" 
     | "evalF A (rec X. \<phi>) = undefined"
+
+
+abbreviation onlyOne:: "a" where "onlyOne \<equiv> \<section>`\<section>\<acute>one`\<acute>"
+value "one"
+value "toProc {one}"
+value "toNames( toProc {one})"
+value "`\<acute>yy`\<acute> =N one"
+
+value "evalA {one} (name one)"
+
+
+(*
+value "evalF (toProc {one}) (\<section>\<acute>one`)"
+value "evalA {one} onlyOne"
+*)
+
 end

@@ -26,6 +26,9 @@ datatype P = Null             ("\<^bold>0")
 abbreviation Output :: "n \<Rightarrow> n \<Rightarrow> P" ("_[[_]]")
   where "Output x y \<equiv> x\<triangleleft>\<acute>y`\<triangleright>"
 
+abbreviation zero :: n
+  where "zero \<equiv> `\<^bold>0\<acute>"
+
 (*Some examples*)
 value "a[[b]]"
 value "zero \<leftarrow> zero.\<^bold>0."
@@ -40,8 +43,7 @@ fun newName :: "nat \<Rightarrow> n"
        |"newName (Suc n) = `(Output (newName n) (newName n))\<acute>"
 
 (*We use begin names with lower case and processes with upper case*) 
-abbreviation zero :: n
-  where "zero \<equiv> `\<^bold>0\<acute>"
+
 abbreviation one :: n
   where "one \<equiv> newName 1"
 abbreviation two :: n
@@ -222,7 +224,7 @@ theorem congruSymmetric:
 sorry
 
 theorem eqReflexive:
-  shows "\<forall> a b. (eq2 a a [])"
+  shows "(eq2 a a [])"
 sorry
 
 theorem eqSymmetric:
@@ -234,20 +236,29 @@ theorem eqTransitive:
 sorry
 
 theorem parAssoc:
-  shows "((a \<parallel> b)\<parallel>c) =C (a\<parallel>(b\<parallel>c))"
-sorry
+  shows "((a\<parallel>b)\<parallel>c) =C (a\<parallel>(b\<parallel>c))"
+using congruReflexive eqReflexive by (induction a, auto)
 
 theorem parCommutative:
   shows "a\<parallel>b =C b\<parallel>a"
+using congruReflexive eqReflexive  apply (induction a rule: P.induct)
+apply simp
+apply (induction b rule: P.induct, auto)
+using congruSymmetric apply blast
 sorry
-
 
 theorem zeroLeft:
   shows "(Null \<parallel> a) =C a"
-sorry
+using congruReflexive apply (induction a rule: P.induct, auto)
+apply (simp add: congruReflexive)
+by (simp add: eqReflexive)
+
 
 theorem zeroRight:
   shows "(a \<parallel> Null) =C a"
-sorry
+apply (induction a rule: P.induct, auto)
+apply (simp add: congruReflexive)
+apply (simp add: congruReflexive)
+by (simp add: eqReflexive)
 
 end
