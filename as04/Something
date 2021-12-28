@@ -1,0 +1,9 @@
+theory LundfallErfurtEx04
+imports Main 
+
+begin
+
+
+definition xor2 :: ""
+
+end

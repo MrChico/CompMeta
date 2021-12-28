@@ -1,0 +1,68 @@
+theory Scratch
+imports Main "~~/src/HOL/Library/Multiset"
+begin
+
+abbreviation A where "A \<equiv> (1::nat)#(2::nat)#(3::nat)#[]"
+abbreviation B where "B \<equiv> (5::nat)#(2::nat)#(3::nat)#[]"
+
+
+abbreviation reflexiveR
+  where "reflexiveR \<equiv> \<lambda> R. \<forall> r. R r r"
+abbreviation transitiveR
+  where "transitiveR \<equiv> \<lambda> R. \<forall> x. \<forall> y. \<forall> z. R x y \<and> R y z \<longrightarrow> R x z"
+abbreviation symmetricR
+  where "symmetricR \<equiv> \<lambda> R. \<forall> x. \<forall> y. R x y \<longrightarrow> R y x"
+
+fun even:: "nat \<Rightarrow> bool"
+  where "even 0 = True"
+       |"even (Suc(0)) = False"
+       |"even (Suc(Suc(n))) = even(n)"
+
+abbreviation congru (infixl "=C" 52)
+  where "congru \<equiv> \<lambda> a b. ((even a) = (even b))" 
+
+primrec inC :: "nat \<Rightarrow> nat list \<Rightarrow> bool"
+  where "inC a [] = (a =C 0)"
+      | "inC a (x#xs) = (a =C x)"
+
+primrec lminus :: "nat \<Rightarrow> nat list \<Rightarrow> nat list"
+  where "lminus a [] = []"
+       |"lminus a (x#xs) = (if (a =C x) then xs else (x#(lminus a xs)))"
+
+function eq :: "nat list \<Rightarrow> nat list \<Rightarrow> bool"
+  where "eq [] []   = True"
+       |"eq [] (x#xs) = eq (x#xs) []"
+       |"eq (x#xs) bs = (if (inC x bs) then (eq xs (lminus x bs)) else False)"
+apply (metis list.exhaust old.prod.exhaust)
+apply simp
+apply simp
+apply simp
+apply simp
+apply simp
+by blast
+termination
+sorry
+
+value "eq ((2::nat)#[]) ((2::nat)#[])"
+value "eq A B"
+
+theorem reflexivCongru:
+  shows "reflexiveR eq"
+sorry
+
+theorem transitiveCongru:
+  shows "transitiveR eq"
+nitpick
+sledgehammer
+sorry
+
+theorem symmetricCongru:
+  shows "symmetricR eq"
+nitpick
+sledgehammer
+sorry
+
+value "eq A B"
+
+
+end

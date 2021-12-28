@@ -1,0 +1,23 @@
+theory Test
+imports Main
+begin
+
+datatype P = Par P P
+           | A
+           | B
+           | C
+           | D
+
+
+value "T(T(B) B)"
+
+abbreviation Set1 where "Set1 \<equiv> {A, B, C, D}"
+abbreviation Set2 where "Set2 \<equiv> {B, C, D, A}"
+
+abbreviation eq where "eq \<equiv> \<lambda> a::P. \<lambda> b::P. \<exists> f:: P \<Rightarrow> P. bij f"
+
+value "eq A B"
+
+
+
+end

@@ -1,0 +1,11 @@
+theory Test
+imports Main
+begin
+
+datatype lala = ohh
+              | Lala lala
+
+value "Lala ohh"
+
+
+end

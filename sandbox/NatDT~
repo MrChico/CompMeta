@@ -1,0 +1,16 @@
+theory NatDT
+imports Main
+begin
+
+datatype A = T A
+           | F A
+           | T
+           | F
+
+
+
+value "T T F"
+
+
+
+end
